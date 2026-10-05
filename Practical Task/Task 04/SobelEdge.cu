@@ -9,9 +9,11 @@
 #include <cuda_runtime.h>
 #include "lodepng.h"
 
-__host__ __device__ int grey(const unsigned char *pixel)
+__host__ __device__ unsigned char rgbToGray(const unsigned char *inImg, size_t i)
 {
-    return (77 * (int)pixel[0] + 150 * (int)pixel[1] + 29 * (int)pixel[2]) >> 8;
+    /* The lecturer's 0.30, 0.59 and 0.11 weights, with exact integer truncation. */
+    return (unsigned char)((30 * (int)inImg[i] + 59 * (int)inImg[i + 1] +
+                            11 * (int)inImg[i + 2]) / 100);
 }
 
 __global__ void sobelEdge(const unsigned char *inImg, unsigned char *outImg, int width, int height)
@@ -28,7 +30,7 @@ __global__ void sobelEdge(const unsigned char *inImg, unsigned char *outImg, int
             int nx = x + col, ny = y + row;
             int value = 0; /* Zero padding outside the image. */
             if (nx >= 0 && nx < width && ny >= 0 && ny < height)
-                value = grey(inImg + ((size_t)ny * width + nx) * 4);
+                value = rgbToGray(inImg, ((size_t)ny * width + nx) * 4);
             gx += value * gxKernel[row + 1][col + 1];
             gy += value * gyKernel[row + 1][col + 1];
         }
@@ -51,7 +53,7 @@ void sobelCPU(const unsigned char *input, unsigned char *output, int width, int 
             for (int r = 0; r < 3; r++) for (int c = 0; c < 3; c++) {
                 int nx = x + c - 1, ny = y + r - 1;
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height)
-                    neighbourhood[r][c] = grey(input + ((size_t)ny * width + nx) * 4);
+                    neighbourhood[r][c] = rgbToGray(input, ((size_t)ny * width + nx) * 4);
             }
             int gx = -neighbourhood[0][0] + neighbourhood[0][2]
                    - 2 * neighbourhood[1][0] + 2 * neighbourhood[1][2]

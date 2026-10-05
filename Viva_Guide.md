@@ -64,16 +64,36 @@ The tests establish the results; you still need to explain why the code obtains 
 
 - RGBA uses four bytes per pixel. Pixel i starts at byte `i*4`.
 - The one-dimensional index converts to `x=i%width` and `y=i/width`.
+- The lecturer's last-class example converts RGB to grayscale. This assignment
+  extends that example by calculating the complete 3x3 Sobel convolution.
+  Explain where the grayscale sample enters the Gx and Gy sums.
 - Trace Gx and Gy on a 3x3 patch. Gx measures left-right intensity changes;
   Gy measures top-bottom changes. Magnitude combines them using a square root.
 - Zero padding means a neighbour outside the image has intensity zero. This
   can create boundary edges in a constant white image.
 - Input and output must be separate. In-place writes would change neighbour
   samples while other threads are still reading them.
-- Integer luminance uses weights 77, 150 and 29 with division by 256.
-  The edge map caps the magnitude at 255 and preserves alpha.
+- `rgbToGray(inImg, i)` reads RGB at byte index i and uses
+  `(30*R + 59*G + 11*B)/100`. These are the lecturer's 0.30, 0.59 and 0.11
+  weights. Integer division truncates the result consistently on CPU and GPU;
+  for RGB `(0,23,13)` the result is 15. The independent NumPy tests include
+  colors that detect the previous grayscale coefficients and rounding errors.
+- The edge map caps the magnitude at 255 and preserves alpha. Alpha does not
+  enter the intensity calculation.
+- Blocks contain 256 threads, and the block count rounds the pixel count up.
+  Threads past the final pixel return through the bounds check. Using image
+  height as the block's thread count can exceed a GPU's block limit, so this
+  launch works for varying image dimensions.
 - PNG compression is handled by LodePNG on the CPU. The decoded pixel
   computation is the CUDA kernel; PNG decoding itself is not GPU work.
+- `%%writefile` saves the separate CUDA source. Direct `nvcc` compilation links
+  it with `lodepng.cpp`; the `nvcc4jupyter` extension is optional for this file
+  compilation workflow.
+- The notebook downloads `download.png`, `smarties.png` and `sudoku.png` from
+  public URLs with `wget`, so their sources can be accessed without this
+  repository's login. SHA-256 and PNG dimensions are verified before use.
+  `image_downloads.json` records a public download or a reported bundled-copy
+  fallback if the host is unavailable or its bytes have changed.
 - Explain kernel time, transfer-plus-kernel time, and total application time.
   A kernel speedup cannot be used as an end-to-end speedup.
 - Compare a single pixel and a large image. GPU startup and transfer costs

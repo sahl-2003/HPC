@@ -17,6 +17,16 @@ first tries the GitHub resource URLs, then uses that copy when the repository
 is private. No Google Drive mount is needed. Public unauthenticated GitHub
 downloads require a later visibility change authorised by the student.
 
+Task 04's demonstration images already have public URLs. Its setup uses `wget`
+to fetch the lecturer's `download.png` image and the OpenCV samples
+`smarties.png` and `sudoku.png`, even while this repository is private. The
+OpenCV URLs are pinned to a specific revision. Checksums and PNG dimensions
+are checked before processing. If a host is unavailable or the image changes,
+setup reports that it is using the verified bundled copy.
+`Practical Task/Task 04/images/public_images.json` records the sources and
+checksums; `image_downloads.json` records how each image was loaded during a run.
+See the Task 04 `images/SOURCES.md` for the public image links and attribution.
+
 The senior portfolio informed folder organisation only. Its earlier tasks
 differ from this year's assessment. The programs here follow the current brief.
 
@@ -55,11 +65,22 @@ The word and matrix programs use the CPU in that runtime. Password recovery
 and Sobel detection use its T4 GPU. A Colab GPU allocation is required to run
 the CUDA programs. No local CUDA installation is needed for these notebooks.
 
+Task 04 follows the lecturer's last-class RGBA decoding and `rgbToGray` style.
+Grayscale intensity is `(30*R + 59*G + 11*B)/100`, with integer truncation.
+The complete assignment then applies the 3x3 Gx and Gy Sobel kernels with zero
+padding, combines their magnitudes and saves the edge image with its alpha
+channel. `%%writefile` creates `SobelEdge.cu`, which `nvcc` compiles together
+with `lodepng.cpp`.
+
 ## Outputs and evidence
 
 The required output files are saved beside each task source. `evidence/validation`
-contains the full T4 validation logs and its 23-group PASS manifest. The local
-`evidence` directory also contains one MP4 browser recording per task. Those
+contains the initial full T4 validation logs and its 23-group PASS manifest.
+The revised Task 04 notebook writes a separate `task4_validation.json` after
+checking all pixels in 14 PNGs, including the three public demonstration images,
+synthetic patterns and grayscale rounding cases. Its checks also cover corrupt
+files and invalid paths. The manifest records the result of that revised run.
+The local `evidence` directory also contains one MP4 browser recording per task. Those
 recordings capture the live Colab viewport while the program is rerun and its
 output is displayed, preserving elapsed time at a reduced frame rate.
 Videos are excluded from Git history and included in local archives.

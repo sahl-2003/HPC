@@ -1,0 +1,193 @@
+!nvcc --version
+!pip install git+https://github.com/andreinechaev/nvcc4jupyter.git
+%load_ext nvcc4jupyter
+!wget https://i.ibb.co/5gB80K0Z/download.png
+from IPython.display import Image
+Image("/content/download.png")
+!wget  https://raw.githubusercontent.com/kasunkosala/hpc/refs/heads/main/lodepng.cpp
+%%writefile SobelEdge.cu
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#include "/content/lodepng.h"
+
+const int ERROR_EXIT_VALUE = -1;
+
+__global__  void sobelEdge( unsigned char * inImg, unsigned char *outImg, int * width, int * height )
+{
+  int i =(blockIdx.x * blockDim.x + threadIdx.x)*4;
+
+ outImg[i] = inImg[i];
+ outImg[i+1] = inImg[i+1];
+ outImg[i+2] = inImg[i+2];
+ outImg[i+3] = inImg[i+3];
+}
+int main( int argc, char * argv[] )
+{
+    unsigned  char * c_inImg,  *c_outImg;
+    unsigned int c_width, c_height;
+
+    char *inFileName, *outFileName;
+
+    inFileName = (char *)malloc(25);
+    outFileName = (char *)malloc(25);
+
+	if (argc > 2)
+  {
+			strncpy (inFileName, argv[1], 25);
+			strncpy (outFileName, argv[2], 25);
+  }
+  else
+	{
+      strcpy (inFileName, "download.png");
+      strcpy (outFileName, "outImg.png");
+  }
+
+	unsigned int lodepng_error;
+	lodepng_error = lodepng_decode32_file(&c_inImg, &c_width, &c_height, inFileName);
+
+	if (lodepng_error) {
+		printf("Error decoding png file: '%u' '%s'\n", lodepng_error, lodepng_error_text(lodepng_error));
+		exit(ERROR_EXIT_VALUE);
+	}
+
+	if (c_width <= 0 || c_height <= 0) {
+        printf("Unable to decode image. Validate file and try again\n");
+        exit(ERROR_EXIT_VALUE);
+    }
+ printf(" Img width (%d) & height (%d) \n", c_width, c_height );
+
+   int imgSize, intSize;
+   imgSize = 4 * c_width * c_height ;
+   intSize = sizeof(int);
+
+   //c_inImg = (unsigned char *)malloc(imgSize);
+   c_outImg = (unsigned char *)malloc(imgSize);
+
+   unsigned char * d_inImg, *d_outImg;
+   int *d_width, *d_height;
+
+  cudaMalloc((void **)&d_inImg, imgSize);
+  cudaMalloc((void **)&d_outImg, imgSize);
+  cudaMalloc((void **)&d_width, intSize);
+  cudaMalloc((void **)&d_height, intSize);
+
+  cudaMemcpy(d_inImg, c_inImg, imgSize, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_width, &c_width, intSize, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_height, &c_height, intSize, cudaMemcpyHostToDevice);
+
+   sobelEdge <<<c_width, c_height>>>( d_inImg, d_outImg, d_width, d_height ) ;
+
+  cudaMemcpy(c_outImg, d_outImg, imgSize, cudaMemcpyDeviceToHost);
+
+   cudaDeviceSynchronize();
+
+ lodepng_error = lodepng_encode32_file(outFileName, c_outImg, c_width, c_height);
+
+   free(c_inImg); free(c_outImg);
+   cudaFree(d_inImg); cudaFree(d_outImg);
+   cudaFree(d_width); cudaFree(d_height);
+
+   return 0;
+}
+%%shell
+nvcc -o SobelEdge lodepng.cpp SobelEdge.cu
+./SobelEdge
+%%writefile SobelEdge.cu
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#include "/content/lodepng.h"
+
+const int ERROR_EXIT_VALUE = -1;
+
+__device__  unsigned char rgbToGray( unsigned char * inImg, int i )
+{
+  unsigned char gray = (unsigned char) (0.3 * inImg[i] + 0.59 * inImg[i+1] + 0.11 * inImg[i+2]);
+  return gray;
+
+}
+
+
+__global__  void sobelEdge( unsigned char * inImg, unsigned char *outImg, int * width, int * height )
+{
+  int i =(blockIdx.x * blockDim.x + threadIdx.x)*4;
+  outImg[i/4] = rgbToGray(inImg, i);
+
+ unsigned char gray = (unsigned char) (0.3 * inImg[i] + 0.59 * inImg[i+1] + 0.11 * inImg[i+2]);
+ outImg[i/4] = gray;
+
+}
+int main( int argc, char * argv[] )
+{
+    unsigned  char * c_inImg,  *c_outImg;
+    unsigned int c_width, c_height;
+
+    char *inFileName, *outFileName;
+
+    inFileName = (char *)malloc(25);
+    outFileName = (char *)malloc(25);
+
+	if (argc > 2)
+  {
+			strncpy (inFileName, argv[1], 25);
+			strncpy (outFileName, argv[2], 25);
+  }
+  else
+	{
+      strcpy (inFileName, "download.png");
+      strcpy (outFileName, "outImg.png");
+  }
+
+	unsigned int lodepng_error;
+	lodepng_error = lodepng_decode32_file(&c_inImg, &c_width, &c_height, inFileName);
+
+	if (lodepng_error) {
+		printf("Error decoding png file: '%u' '%s'\n", lodepng_error, lodepng_error_text(lodepng_error));
+		exit(ERROR_EXIT_VALUE);
+	}
+
+	if (c_width <= 0 || c_height <= 0) {
+        printf("Unable to decode image. Validate file and try again\n");
+        exit(ERROR_EXIT_VALUE);
+    }
+ printf(" Img width (%d) & height (%d) \n", c_width, c_height );
+
+   int imgSize, intSize, grayImgSize;
+   imgSize = 4 * c_width * c_height ;
+   intSize = sizeof(int);
+   grayImgSize = imgSize /4;
+
+   //c_inImg = (unsigned char *)malloc(imgSize);
+   c_outImg = (unsigned char *)malloc(grayImgSize);
+
+   unsigned char * d_inImg, *d_outImg;
+   int *d_width, *d_height;
+
+  cudaMalloc((void **)&d_inImg, imgSize);
+  cudaMalloc((void **)&d_outImg, grayImgSize);
+  cudaMalloc((void **)&d_width, intSize);
+  cudaMalloc((void **)&d_height, intSize);
+
+  cudaMemcpy(d_inImg, c_inImg, imgSize, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_width, &c_width, intSize, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_height, &c_height, intSize, cudaMemcpyHostToDevice);
+
+   sobelEdge <<<c_width, c_height>>>( d_inImg, d_outImg, d_width, d_height ) ;
+
+  cudaMemcpy(c_outImg, d_outImg, grayImgSize, cudaMemcpyDeviceToHost);
+
+   cudaDeviceSynchronize();
+
+// lodepng_error = lodepng_encode32_file(outFileName, c_outImg, c_width, c_height);
+   lodepng_error = lodepng_encode_file(outFileName, c_outImg, c_width, c_height, LCT_GREY, 8);
+   free(c_inImg); free(c_outImg);
+   cudaFree(d_inImg); cudaFree(d_outImg);
+   cudaFree(d_width); cudaFree(d_height);
+
+   return 0;
+}

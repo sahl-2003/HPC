@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "python": "3.13.15",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+  "tests": [
+    {
+      "test": "Task 4 full pixel oracle",
+      "status": "PASS",
+      "details": "14 PNGs, zero padding, saturation, alpha and non-multiple sizes"
+    },
+    {
+      "test": "Task 4 corrupt files and invalid paths",
+      "status": "PASS",
+      "details": "reports failures, continues to valid image, rejects name collisions"
+    }
+  ],
+  "run_task": 4,
+  "gpu": "Tesla T4, 580.82.07"
+}

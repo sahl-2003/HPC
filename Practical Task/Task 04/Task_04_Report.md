@@ -13,9 +13,9 @@ Decode multiple PNG images, apply the Sobel horizontal and vertical kernels on t
 
 ## Implementation
 
-LodePNG decodes each file into an RGBA host array. Its original copyright and licence notices are retained. The input images are original repeatable test patterns: shapes at 512x384, a gradient at 640x480 and a checkerboard at 257x193. The final dimensions deliberately include a non-divisible pixel count.
+The notebook uses wget to download download.png (300x300) from the lecturer's public image URL, plus smarties.png (413x356) and sudoku.png (558x563) from pinned public OpenCV sample URLs. SHA-256 and PNG dimensions are checked before use; image_downloads.json records the source and load mode. These images require no private GitHub login or Drive mount. LodePNG decodes each file into an RGBA host array, with its original licence notices retained.
 
-Integer luminance is (77*R + 150*G + 29*B) / 256, rounded down. The 3x3 Gx matrix is [-1,0,1; -2,0,2; -1,0,1], and Gy is [-1,-2,-1; 0,0,0; 1,2,1]. Each thread visits its pixel's 3x3 neighbourhood and treats any out-of-image sample as zero.
+The last-class sample demonstrates PNG decoding, explicit CUDA memory transfers and rgbToGray; its final kernel stops at grayscale conversion. This implementation extends that workflow with the assessed Sobel convolution. Luminance uses the lecturer's 0.30R + 0.59G + 0.11B weights as (30*R + 59*G + 11*B) / 100, rounded down. Integer arithmetic gives identical CPU and GPU truncation. Gx is [-1,0,1; -2,0,2; -1,0,1] and Gy is [-1,-2,-1; 0,0,0; 1,2,1]. Out-of-image neighbours are zero.
 
 The edge magnitude is sqrt(Gx*Gx + Gy*Gy), truncated to an integer and capped at 255. That edge value is written to R, G and B; alpha is copied from the original pixel. Reading always uses the separate input buffer, so one pixel's output cannot change a neighbour's input.
 
@@ -33,11 +33,11 @@ Images are processed one at a time, releasing host buffers, device buffers and e
 
 ## Results and tests
 
-All pixels matched both references for ten PNGs: the three main patterns, 3x3 black and white inputs, a single pixel, a 6x4 input, and random RGBA inputs of 2x5, 17x19 and 1025x2. Tests covered zero padding, saturation, preserved transparency and padded launch threads.
+The updated notebook downloaded all three demonstration PNGs live from their public URLs on the Tesla T4. All pixels matched the serial C reference and independent NumPy oracle for fourteen PNGs: these three public inputs, three original synthetic patterns, 3x3 black and white inputs, a single pixel, a 6x4 input, random RGBA inputs of 2x5, 17x19 and 1025x2, and a coloured rounding fixture. That fixture detects the previous grayscale weights and checks changing alpha values. Tests covered zero padding, saturation, transparency and padded launch threads.
 
 Corrupt PNGs, missing files, missing output directories and duplicate basenames were tested. A corrupt image followed by a valid image confirmed that the valid image still processed and the overall command reported the batch failure.
 
-The recorded 640x480 gradient run took 14.651 ms for serial CPU computation, 0.035 ms for the CUDA kernel, and 0.754 ms for transfers plus kernel. These are single-run observations. GPU allocation, PNG decoding and encoding are outside the transfer-and-kernel interval. The first CUDA invocation has additional startup overhead, so timings are not stable benchmark estimates.
+The updated 413x356 smarties.png run took 9.062 ms for serial CPU computation, 0.030 ms for the CUDA kernel, and 0.487 ms for transfers plus kernel. These are single-run observations. GPU allocation, PNG decoding and encoding are outside the transfer-and-kernel interval. The first CUDA invocation has additional startup overhead, so timings are not stable benchmark estimates.
 
 
 ## Performance and limits
@@ -51,5 +51,5 @@ Converting colour to luminance detects intensity edges. It does not preserve col
 ```sh
 nvcc -O2 -arch=sm_75 lodepng.cpp SobelEdge.cu -o SobelEdge
 mkdir -p outputs
-./SobelEdge outputs images/shapes.png images/gradient.png images/checkerboard.png
+./SobelEdge outputs images/download.png images/smarties.png images/sudoku.png
 ```

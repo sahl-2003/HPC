@@ -182,7 +182,7 @@ def task3():
 
 def sobel_oracle(image):
     rgba=np.asarray(image.convert('RGBA')).astype(np.int32)
-    grey=(77*rgba[:,:,0]+150*rgba[:,:,1]+29*rgba[:,:,2])//256
+    grey=(30*rgba[:,:,0]+59*rgba[:,:,1]+11*rgba[:,:,2])//100
     h,w=grey.shape
     padded=np.pad(grey,1,mode='constant')
     gx=-padded[0:h,0:w]+padded[0:h,2:w+2]-2*padded[1:h+1,0:w]+2*padded[1:h+1,2:w+2]-padded[2:h+2,0:w]+padded[2:h+2,2:w+2]
@@ -206,6 +206,15 @@ def task4():
         rng=np.random.default_rng(6005)
         for w,h in [(2,5),(17,19),(1025,2)]:
             path=work/f'random_{w}_{h}.png'; Image.fromarray(rng.integers(0,256,(h,w,4),dtype=np.uint8)).save(path); fixtures.append(path)
+        # Separated colour impulses expose coefficient and rounding differences without
+        # every edge being saturated. Alpha varies independently of the RGB values.
+        colours=np.array([(0,23,13),(0,39,9),(0,255,0),(100,0,0),(0,0,100),(14,14,14)],dtype=np.int32)
+        np.testing.assert_array_equal(colours @ np.array([30,59,11]) // 100,[15,24,150,30,11,14])
+        colour_fixture=np.zeros((7,13,4),dtype=np.uint8)
+        colour_fixture[:,:,3]=np.arange(91,dtype=np.uint8).reshape(7,13)
+        for colour,(y,x) in zip(colours,[(2,2),(2,6),(2,10),(5,2),(5,6),(5,10)]):
+            colour_fixture[y,x,:3]=colour
+        path=work/'colour_weights.png'; Image.fromarray(colour_fixture).save(path); fixtures.append(path)
         fixtures += sorted((folder/'images').glob('*.png'))
         p,seconds=run([exe,work,*fixtures],work)
         (RESULTS/'task4_images.log').write_text(p.stdout)

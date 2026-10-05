@@ -27,8 +27,9 @@
     "task": 4,
     "file": "Task_04.mp4",
     "captured_frames": 110,
-    "capture": "Live Colab browser viewport, continuous captures during actual cell execution and output display",
+    "capture": "Live Colab browser viewport during actual updated Task 04 execution and grayscale output display",
     "timing": "Original elapsed intervals retained; variable frame rate",
-    "decoded_without_errors": true
+    "decoded_without_errors": true,
+    "revision": "Lecturer rgbToGray weights and three public PNG inputs"
   }
 ]
