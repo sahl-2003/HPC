@@ -67,19 +67,31 @@ the CUDA programs. No local CUDA installation is needed for these notebooks.
 
 Task 04 follows the lecturer's last-class RGBA decoding and `rgbToGray` style.
 Grayscale intensity is `(30*R + 59*G + 11*B)/100`, with integer truncation.
-The complete assignment then applies the 3x3 Gx and Gy Sobel kernels with zero
-padding, combines their magnitudes and saves the edge image with its alpha
-channel. `%%writefile` creates `SobelEdge.cu`, which `nvcc` compiles together
-with `lodepng.cpp`.
+The complete assignment applies the 3x3 Gx and Gy Sobel kernels with zero
+padding. For each input, the notebook displays four views: the original image,
+the X gradient, the Y gradient and the combined Sobel magnitude. Gx measures
+left-right intensity changes, so it emphasises vertical edges; Gy measures
+top-bottom changes, so it emphasises horizontal edges.
+
+The program saves `outImg_Gx_<basename>` and `outImg_Gy_<basename>` as grayscale
+PNGs, using `lodepng_encode_file` with `LCT_GREY` and 8-bit samples as taught in
+class. The displayed gradient intensities are `min(abs(Gx),255)` and
+`min(abs(Gy),255)`. The final `outImg_<basename>` is calculated from the signed,
+unclipped sums as `min(sqrt(Gx*Gx + Gy*Gy),255)` and preserves the input alpha
+channel. Each pixel's CUDA thread writes its own output values.
+`%%writefile` creates `SobelEdge.cu`, which `nvcc` compiles together with
+`lodepng.cpp`. See `Practical Task/Task 04/Task_04_Requirements.md` for the
+question's requirements and their implementation.
 
 ## Outputs and evidence
 
 The required output files are saved beside each task source. `evidence/validation`
 contains the initial full T4 validation logs and its 23-group PASS manifest.
-The revised Task 04 notebook writes a separate `task4_validation.json` after
-checking all pixels in 14 PNGs, including the three public demonstration images,
-synthetic patterns and grayscale rounding cases. Its checks also cover corrupt
-files and invalid paths. The manifest records the result of that revised run.
+The Task 04 notebook writes a separate `task4_validation.json` after checking
+the X gradient, Y gradient and final magnitude against an independent pixel
+calculation. Inputs include the three public demonstration images, synthetic
+patterns and grayscale rounding cases. Its checks also cover corrupt files and
+invalid paths. The manifest records the result of that run.
 The local `evidence` directory also contains one MP4 browser recording per task. Those
 recordings capture the live Colab viewport while the program is rerun and its
 output is displayed, preserving elapsed time at a reduced frame rate.

@@ -27,9 +27,9 @@
     "task": 4,
     "file": "Task_04.mp4",
     "captured_frames": 110,
-    "capture": "Live Colab browser viewport during actual updated Task 04 execution and grayscale output display",
+    "capture": "Genuine live Colab browser captures during CUDA execution, fullscreen four-view results for three public PNGs, and passing independent checks",
     "timing": "Original elapsed intervals retained; variable frame rate",
     "decoded_without_errors": true,
-    "revision": "Lecturer rgbToGray weights and three public PNG inputs"
+    "revision": "Four views per public PNG: original, Gx, Gy and Sobel magnitude"
   }
 ]

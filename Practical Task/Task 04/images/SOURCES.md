@@ -26,5 +26,7 @@ which mode was used for each image during that run.
 The original `shapes.png`, `gradient.png` and `checkerboard.png` files are synthetic
 correctness fixtures. They are included in the notebook's resource copy so that
 another device can run the same tests while the project repository is private.
-They are checked alongside eight small generated fixtures, including the
-lecturer's grayscale rounding cases and transparent pixels.
+They are checked alongside generated fixtures for the lecturer's grayscale
+rounding cases, transparent pixels, both gradient directions and the brief's
+Gx=6, Gy=8, magnitude=10 example. Every test compares the two gradient maps and
+the final edge image independently.

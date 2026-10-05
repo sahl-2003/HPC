@@ -180,7 +180,7 @@ def task3():
         record('Task 3 lecturer generator compatibility', '25 generated encrypted records verified')
     run([exe,folder/'passwords.txt'],folder)
 
-def sobel_oracle(image):
+def sobel_maps_oracle(image):
     rgba=np.asarray(image.convert('RGBA')).astype(np.int32)
     grey=(30*rgba[:,:,0]+59*rgba[:,:,1]+11*rgba[:,:,2])//100
     h,w=grey.shape
@@ -191,7 +191,34 @@ def sobel_oracle(image):
     result=np.empty_like(rgba,dtype=np.uint8)
     result[:,:,:3]=edge[:,:,None]
     result[:,:,3]=rgba[:,:,3]
-    return result
+    gx_map=np.minimum(255,np.abs(gx)).astype(np.uint8)
+    gy_map=np.minimum(255,np.abs(gy)).astype(np.uint8)
+    return gx_map,gy_map,result
+
+def sobel_oracle(image):
+    """Keep the final-image oracle available to report and figure helpers."""
+    return sobel_maps_oracle(image)[2]
+
+def check_sobel_outputs(input_path, output_folder):
+    with Image.open(input_path) as source:
+        expected_gx,expected_gy,expected_final=sobel_maps_oracle(source)
+        size=source.size
+    with Image.open(output_folder/('outImg_'+input_path.name)) as image:
+        assert image.size==size
+        actual_final=np.array(image.convert('RGBA'))
+    np.testing.assert_array_equal(actual_final,expected_final)
+    gradients=[]
+    for prefix,expected in [('outImg_Gx_',expected_gx),('outImg_Gy_',expected_gy)]:
+        with Image.open(output_folder/(prefix+input_path.name)) as image:
+            assert image.format=='PNG' and image.size==size
+            rgba=np.array(image.convert('RGBA'))
+            np.testing.assert_array_equal(rgba[:,:,0],rgba[:,:,1])
+            np.testing.assert_array_equal(rgba[:,:,0],rgba[:,:,2])
+            assert np.all(rgba[:,:,3]==255), 'Gradient display maps have no alpha channel'
+            actual=np.array(image.convert('L'))
+        np.testing.assert_array_equal(actual,expected)
+        gradients.append(actual)
+    return gradients[0],gradients[1],actual_final
 
 def task4():
     folder=TASKS/'Task 04'
@@ -215,20 +242,54 @@ def task4():
         for colour,(y,x) in zip(colours,[(2,2),(2,6),(2,10),(5,2),(5,6),(5,10)]):
             colour_fixture[y,x,:3]=colour
         path=work/'colour_weights.png'; Image.fromarray(colour_fixture).save(path); fixtures.append(path)
+        # Known axis ramps exercise both gradient signs, without saturation.
+        x_ramp=np.tile(np.arange(7,dtype=np.uint8)*4,(5,1))
+        y_ramp=np.tile((np.arange(5,dtype=np.uint8)*4)[:,None],(1,7))
+        axis_fixtures={}
+        for name,intensity,axis in [('x_increasing',x_ramp,'x'),('x_decreasing',x_ramp[:,::-1],'x'),
+                                    ('y_increasing',y_ramp,'y'),('y_decreasing',y_ramp[::-1,:],'y')]:
+            path=work/(name+'.png'); Image.fromarray(intensity).save(path)
+            fixtures.append(path); axis_fixtures[path]=axis
+        patch_path=work/'patch_6_8.png'
+        Image.fromarray(np.array([[0,0,0],[0,0,3],[0,4,0]],dtype=np.uint8)).save(patch_path)
+        fixtures.append(patch_path)
         fixtures += sorted((folder/'images').glob('*.png'))
         p,seconds=run([exe,work,*fixtures],work)
         (RESULTS/'task4_images.log').write_text(p.stdout)
         for path in fixtures:
-            actual=np.asarray(Image.open(work/('outImg_'+path.name)).convert('RGBA'))
-            expected=sobel_oracle(Image.open(path))
-            np.testing.assert_array_equal(actual,expected)
-        record('Task 4 full pixel oracle', f'{len(fixtures)} PNGs, zero padding, saturation, alpha and non-multiple sizes')
+            check_sobel_outputs(path,work)
+        record('Task 4 full pixel oracle', f'{len(fixtures)} inputs and {3*len(fixtures)} output PNGs; Gx, Gy and final, zero padding, saturation, alpha and non-multiple sizes')
+        for path,axis in axis_fixtures.items():
+            gx_map,gy_map,final=check_sobel_outputs(path,work)
+            active,other=(gx_map,gy_map) if axis=='x' else (gy_map,gx_map)
+            assert np.all(active[1:-1,1:-1]==32)
+            assert np.all(other[1:-1,1:-1]==0)
+            assert np.all(final[1:-1,1:-1,:3]==32)
+        gx_map,gy_map,final=check_sobel_outputs(patch_path,work)
+        assert (int(gx_map[1,1]),int(gy_map[1,1]),int(final[1,1,0]))==(6,8,10)
+        record('Task 4 gradient axes and 6-8-10 example', 'increasing/decreasing x and y ramps; known centre Gx=6, Gy=8, final=10')
         bad=work/'bad.png'; bad.write_text('not a PNG')
-        run([exe,work,bad,fixtures[0]],work,expected=1)
+        continuation=work/'continuation'; continuation.mkdir()
+        batch,_=run([exe,continuation,bad,fixtures[0]],work,expected=1)
+        assert 'Successfully processed 1/2 PNG images.' in batch.stdout
+        check_sobel_outputs(fixtures[0],continuation)
         run([exe,work,work/'missing.png'],work,expected=1)
         run([exe,work/'missing-dir',fixtures[0]],work,expected=1)
         run([exe,work,fixtures[0],fixtures[0]],work,expected=1)
-        record('Task 4 corrupt files and invalid paths', 'reports failures, continues to valid image, rejects name collisions')
+        collision_inputs=work/'collision_inputs'; collision_inputs.mkdir()
+        collision_outputs=work/'collision_outputs'; collision_outputs.mkdir()
+        for name in ['foo.png','Gx_foo.png','Gy_foo.png']:
+            shutil.copyfile(fixtures[0],collision_inputs/name)
+        for prefix in ['Gx_','Gy_']:
+            first,second=collision_inputs/'foo.png',collision_inputs/(prefix+'foo.png')
+            for pair in [(first,second),(second,first)]:
+                run([exe,collision_outputs,*pair],work,expected=1)
+                assert not any(collision_outputs.iterdir()), 'Collision must be rejected before writing any map'
+        # Prefixed basenames are allowed when the complete output sets do not collide.
+        safe_pair=[collision_inputs/'Gx_foo.png',collision_inputs/'Gy_foo.png']
+        run([exe,collision_outputs,*safe_pair],work)
+        for path in safe_pair: check_sobel_outputs(path,collision_outputs)
+        record('Task 4 corrupt files and invalid paths', 'continues to valid image; rejects duplicate and cross-map names before writing; permits non-colliding prefixed names')
     outputs=folder/'outputs'; outputs.mkdir(exist_ok=True)
     run([exe,outputs,*sorted((folder/'images').glob('*.png'))],folder)
 

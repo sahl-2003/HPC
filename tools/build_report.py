@@ -39,7 +39,11 @@ links=json.loads((ROOT/'colab_links.json').read_text()) if (ROOT/'colab_links.js
 task4_log=(EVIDENCE/'task4_public_run.log').read_text()
 task4_times=re.search(r'images/smarties\.png:.*?CPU compute: ([\d.]+) ms; CUDA kernel: ([\d.]+) ms; CUDA transfers \+ kernel: ([\d.]+) ms', task4_log, re.S)
 assert task4_times, 'Updated Task 04 execution log is required.'
-assert json.loads((EVIDENCE/'task4_validation.json').read_text())['status']=='PASS'
+task4_manifest=json.loads((EVIDENCE/'task4_validation.json').read_text())
+assert task4_manifest['status']=='PASS'
+task4_test_groups=len(task4_manifest['tests'])
+task4_png_count=int(re.search(r'^(\d+) (?:inputs|PNGs)',task4_manifest['tests'][0]['details'])[1])
+assert any('gradient axes' in test['test'] for test in task4_manifest['tests']), 'Four-view CUDA validation is required.'
 task4_downloads=json.loads((TASKS/'Task 04'/'image_downloads.json').read_text())
 assert all(image['load_mode']=='live public download' for image in task4_downloads)
 git_colab=lambda n:f'https://colab.research.google.com/github/sahl-2003/HPC/blob/main/Practical%20Task/Task%20{n:02d}/Task_{n:02d}.ipynb'
@@ -88,16 +92,16 @@ task_content={
        'All records are held in host and device memory at once. Memory demand therefore grows linearly with file size, and files that cannot be allocated fail clearly. Kernel time alone must not be reported as end-to-end application time or compared with a CPU program that includes file I/O.']},
 4:{'title':'Sobel Edge Detection using Cuda across many PNG images','source':'SobelEdge.cu',
    'command':'nvcc -O2 -arch=sm_75 lodepng.cpp SobelEdge.cu -o SobelEdge\nmkdir -p outputs\n./SobelEdge outputs images/download.png images/smarties.png images/sudoku.png',
-   'objective':['Decode multiple PNG images, apply the Sobel horizontal and vertical kernels on the GPU with zero padding, and save each resulting edge image with the original width, height and alpha channel.'],
+   'objective':['Process multiple PNG inputs with CUDA and reproduce the brief\'s four views for each input: Original Image, Gradient in X direction, Gradient in Y direction and Sobel Edge Detection. The four panels illustrate one input; the brief does not specify exactly four different inputs. Save both gradient maps and the combined edge map at the original dimensions.'],
    'algorithm':['The notebook uses wget to download download.png (300x300) from the lecturer\'s public image URL, plus smarties.png (413x356) and sudoku.png (558x563) from pinned public OpenCV sample URLs. SHA-256 and PNG dimensions are checked before use; image_downloads.json records the source and load mode. These images require no private GitHub login or Drive mount. LodePNG decodes each file into an RGBA host array, with its original licence notices retained.',
        'The last-class sample demonstrates PNG decoding, explicit CUDA memory transfers and rgbToGray; its final kernel stops at grayscale conversion. This implementation extends that workflow with the assessed Sobel convolution. Luminance uses the lecturer\'s 0.30R + 0.59G + 0.11B weights as (30*R + 59*G + 11*B) / 100, rounded down. Integer arithmetic gives identical CPU and GPU truncation. Gx is [-1,0,1; -2,0,2; -1,0,1] and Gy is [-1,-2,-1; 0,0,0; 1,2,1]. Out-of-image neighbours are zero.',
-       'The edge magnitude is sqrt(Gx*Gx + Gy*Gy), truncated to an integer and capped at 255. That edge value is written to R, G and B; alpha is copied from the original pixel. Reading always uses the separate input buffer, so one pixel\'s output cannot change a neighbour\'s input.',
-       'GPU memory is sized as width*height*4 bytes for each input and output array. The x grid uses ceil(pixel_count/256) blocks, with a bounds guard in the kernel. The command accepts an output directory and any number of input images. Result names are outImg_ followed by the input basename. Distinct basenames avoid accidental overwriting.'],
-   'correctness':['After launch and execution checks, the output is copied to the host. A serial C reference expresses the gradients as neighbour sums and compares every RGBA byte. An independent NumPy checker also uses padded image arrays and validates the complete output, including alpha.',
+       'Gx measures left-to-right intensity changes and Gy measures top-to-bottom changes, following the written axis definitions. The kernel saves min(255, abs(Gx)) and min(255, abs(Gy)) in separate one-byte-per-pixel display buffers. The final magnitude uses the original signed sums: sqrt(Gx*Gx + Gy*Gy), then truncation and saturation at 255. Clipping a display map never changes that calculation. The final edge value fills RGB and preserves input alpha; the separate gradient maps contain grayscale intensity only.',
+       'RGBA input and final output arrays each use width*height*4 bytes. Each gradient array uses width*height bytes. The x grid has ceil(pixel_count/256) blocks and a guard for padded threads. The command accepts any number of PNGs. Output names are outImg_, outImg_Gx_ and outImg_Gy_ followed by the input basename. The host rejects duplicate or colliding generated names before processing. Gradient encoding uses lodepng_encode_file with LCT_GREY, 8, matching the lecturer\'s grayscale-buffer workflow.'],
+   'correctness':['Checked kernel completion precedes device-to-host copies of all three maps. A serial C reference expresses the gradients as neighbour sums and compares every final RGBA byte and both gradient buffers. An independent NumPy checker verifies all saved maps and their dimensions, including alpha in the final edge image.',
        'Every successful output has exactly the original image dimensions. Zero padding can produce a visible edge around a constant bright image because its boundary neighbours are black. This is expected under the specified padding rule. PNG decode or encode failures and CUDA failures return errors; the batch can continue to a later valid input.',
-       'Images are processed one at a time, releasing host buffers, device buffers and events after each image. The CPU reference needs a third host array for verification. Peak working memory depends on the largest image, rather than the sum of every image in the batch.'],
-   'tests':['The updated notebook downloaded all three demonstration PNGs live from their public URLs on the Tesla T4. All pixels matched the serial C reference and independent NumPy oracle for fourteen PNGs: these three public inputs, three original synthetic patterns, 3x3 black and white inputs, a single pixel, a 6x4 input, random RGBA inputs of 2x5, 17x19 and 1025x2, and a coloured rounding fixture. That fixture detects the previous grayscale weights and checks changing alpha values. Tests covered zero padding, saturation, transparency and padded launch threads.',
-       'Corrupt PNGs, missing files, missing output directories and duplicate basenames were tested. A corrupt image followed by a valid image confirmed that the valid image still processed and the overall command reported the batch failure.',
+       'Images are processed one at a time. Host image and reference buffers, all four device buffers and timing events are released after each image, including failure paths. Working memory depends on the largest image. Gradients are encoded losslessly from 8-bit grayscale buffers; LodePNG can optimise the file\'s storage without changing its decoded intensities.'],
+   'tests':[f'The revised notebook downloaded all three demonstration PNGs live on the Tesla T4. Every pixel in all three saved maps matched the references across {task4_png_count} PNG inputs. Fixtures cover zero padding, saturation, final-image transparency, grayscale rounding and padded launches, as well as the public images and original synthetic patterns.',
+       'Directional fixtures independently check that a horizontal ramp has zero interior Gy and a vertical ramp has zero interior Gx. Negative gradients remain visible through their absolute values. A constructed 3x3 patch gives Gx=6, Gy=8 and final magnitude 10 at its centre, reproducing the brief\'s numerical example. Corrupt files, invalid paths, duplicate inputs and cross-output filename collisions are also tested; a batch continues to a valid image after a corrupt one.',
        f'The updated 413x356 smarties.png run took {task4_times[1]} ms for serial CPU computation, {task4_times[2]} ms for the CUDA kernel, and {task4_times[3]} ms for transfers plus kernel. These are single-run observations. GPU allocation, PNG decoding and encoding are outside the transfer-and-kernel interval. The first CUDA invocation has additional startup overhead, so timings are not stable benchmark estimates.'],
    'limits':['The implementation uses global memory and a basic one-thread-per-pixel kernel, matching the taught CUDA model. It does not use shared-memory tiling or concurrent image streams. Reading overlapping neighbourhoods repeats memory accesses, but the independent output ownership makes correctness straightforward.',
        'Converting colour to luminance detects intensity edges. It does not preserve coloured edge directions. Very small images can be slower on the GPU once transfer and launch costs are included. The report separates the timing intervals to avoid implying that kernel speed is total application speed.']}
@@ -121,20 +125,23 @@ for border in list(styles.element.iter(qn('w:pBdr'))):
 doc.core_properties.title='High Performance Computing portfolio'
 doc.core_properties.author='Thaslim Mohammed Sahl'
 doc.add_paragraph('High Performance Computing portfolio','Title')
-doc.add_paragraph('6CS005 2025 26 assessment')
+doc.add_paragraph('6CS005 2025/26 assessment')
 doc.add_paragraph('Thaslim Mohammed Sahl\nStudent number 2638120\n5 October 2026')
 doc.add_paragraph('This portfolio implements the four tasks in the current assessment brief using Pthreads, OpenMP and CUDA. Each task has a separate source file, Colab notebook and output resources. Correctness is checked against independent reference calculations and invalid-input tests, with actual execution evidence from a Python 3 Colab runtime using a Tesla T4 GPU.')
 doc.add_heading('Execution and files',1)
 doc.add_paragraph('The programs use the file-handling, dynamic allocation, thread structures, mutexes, parallel loops, CUDA index calculation, and explicit host-device transfer patterns from the supplied weeks and code sir.txt. Python performs setup, fixture generation, verification and display. The assessed computations are in C and CUDA; the CUDA sources remain separate .cu files.')
-doc.add_paragraph('Task folders follow the Practical Task and Task 01 to Task 04 organisation. Required output names are result.txt for word counts, results.txt for matrices, decrypted.txt for passwords, and outImg_ prefixed PNGs for edges. No input resource requires mounting a private Google Drive folder.')
+doc.add_paragraph('Task folders follow the Practical Task and Task 01 to Task 04 organisation. Output names used here are result.txt for word counts, results.txt for matrices, decrypted.txt for passwords, and outImg_ prefixed PNGs for edges. Task 04 adds outImg_Gx_ and outImg_Gy_ PNGs so all four illustrated views can be shown. No input resource requires mounting a private Google Drive folder.')
 link(doc,'GitHub project','https://github.com/sahl-2003/HPC')
 doc.add_paragraph('The GitHub project is private during development as requested. Notebook setup first attempts hosted project resources, then loads a checksum-verified compressed copy stored in the notebook. Task 04 separately downloads its demonstration images from public URLs that already work without a GitHub login. The listed GitHub Colab links require repository access until the student approves a visibility change. The executed Colab notebooks are linked separately under each task.')
 doc.add_heading('Validation result',1)
-doc.add_paragraph('All 23 initial test groups passed on the Tesla T4, including multiple CPU thread counts, all supplied matrix pairs, exhaustive recovery of the 67,600-password domain, invalid inputs, AddressSanitizer and UndefinedBehaviorSanitizer. After incorporating the last-class grayscale example, Task 04 was rerun: both updated test groups passed, including fourteen complete PNG comparisons. Raw logs and separate initial and updated validation manifests are saved under evidence/validation. Task 04 figures and timings below use the updated run.')
+doc.add_paragraph(f'All 23 initial test groups passed on the Tesla T4, including multiple CPU thread counts, all supplied matrix pairs, exhaustive recovery of the 67,600-password domain, invalid inputs, AddressSanitizer and UndefinedBehaviorSanitizer. Task 04 was then rerun with separate X and Y maps: all {task4_test_groups} updated groups passed, including complete comparisons of three maps for each of {task4_png_count} PNG inputs. Raw logs and separate initial and updated validation manifests are saved under evidence/validation. Task 04 figures and timings below use the four-view version.')
 
 for n,data in task_content.items():
     doc.add_page_break()
-    doc.add_heading(f'Task {n:02d} {data["title"]}',1)
+    heading=doc.add_heading(f'Task {n:02d} {data["title"]}',1)
+    if n==4:
+        heading.clear()
+        heading.add_run('Task 04\n'+data['title'])
     link(doc,f'Task {n:02d} source notebook in Colab',git_colab(n))
     if str(n) in links: link(doc,f'Executed Task {n:02d} Colab notebook',links[str(n)])
     section(doc,'Objective',data['objective'])
@@ -155,16 +162,25 @@ for n,data in task_content.items():
         doc.add_paragraph('Actual CUDA execution excerpt. The full file has 10,000 recovered plaintext lines.')
     elif n==4:
         for name in ['download.png']:
-            a=Image.open(TASKS/'Task 04'/'images'/name).convert('RGB')
-            b=Image.open(TASKS/'Task 04'/'outputs'/('outImg_'+name)).convert('RGB')
-            a.thumbnail((500,340)); b.thumbnail((500,340))
-            combined=Image.new('RGB',(a.width+b.width+12,max(a.height,b.height)),(255,255,255))
-            combined.paste(a,(0,0)); combined.paste(b,(a.width+12,0))
+            from PIL import ImageDraw, ImageFont
+            views=[('Original Image',TASKS/'Task 04'/'images'/name),
+                   ('Gradient in X direction',TASKS/'Task 04'/'outputs'/('outImg_Gx_'+name)),
+                   ('Gradient in Y direction',TASKS/'Task 04'/'outputs'/('outImg_Gy_'+name)),
+                   ('Sobel Edge Detection',TASKS/'Task 04'/'outputs'/('outImg_'+name))]
+            combined=Image.new('RGB',(636,692),'white')
+            draw=ImageDraw.Draw(combined)
+            font=ImageFont.truetype('C:/Windows/Fonts/arial.ttf',18)
+            for i,(label,path) in enumerate(views):
+                x=(i%2)*318; y=(i//2)*346
+                draw.text((x+158,y+5),label,font=font,fill='black',anchor='mt')
+                panel=Image.open(path).convert('RGB'); panel.thumbnail((300,300))
+                combined.paste(panel,(x+(318-panel.width)//2,y+36))
             figure=ROOT/'evidence'/('figure_'+name)
             combined.save(figure)
-            doc.add_picture(str(figure),width=Inches(5.8))
+            doc.add_picture(str(figure),width=Inches(4.5))
+            doc.paragraphs[-1].alignment=WD_ALIGN_PARAGRAPH.CENTER
             doc.paragraphs[-1].paragraph_format.keep_with_next=True
-            doc.add_paragraph(f'Input on the left and verified Sobel edge image on the right for {name}.')
+            doc.add_paragraph(f'The four illustrated views for {name}: original, X gradient, Y gradient and combined Sobel edges. All computed maps come from the CUDA run.')
     section(doc,'Performance and limits',data['limits'])
     # A separate readable task answer is included in its task folder.
     lines=[f'# Task {n:02d} {data["title"]}','', 'Thaslim Mohammed Sahl | 2638120 | 6CS005','',

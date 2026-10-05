@@ -67,8 +67,15 @@ The tests establish the results; you still need to explain why the code obtains 
 - The lecturer's last-class example converts RGB to grayscale. This assignment
   extends that example by calculating the complete 3x3 Sobel convolution.
   Explain where the grayscale sample enters the Gx and Gy sums.
-- Trace Gx and Gy on a 3x3 patch. Gx measures left-right intensity changes;
-  Gy measures top-bottom changes. Magnitude combines them using a square root.
+- The four notebook views are the original image, the X gradient, the Y
+  gradient and the combined Sobel magnitude. The program repeats these views
+  for each input PNG.
+- Gx measures left-right intensity changes, so it emphasises vertical edges.
+  Gy measures top-bottom changes, so it emphasises horizontal edges. These are
+  directions of intensity change, not the orientation of the visible edge.
+- Trace the grayscale patch `[[0,0,0],[0,0,3],[0,4,0]]`. At its centre, the
+  Sobel sums are `Gx=6` and `Gy=8`; the combined magnitude is
+  `sqrt(6*6 + 8*8)=10`.
 - Zero padding means a neighbour outside the image has intensity zero. This
   can create boundary edges in a constant white image.
 - Input and output must be separate. In-place writes would change neighbour
@@ -78,8 +85,18 @@ The tests establish the results; you still need to explain why the code obtains 
   weights. Integer division truncates the result consistently on CPU and GPU;
   for RGB `(0,23,13)` the result is 15. The independent NumPy tests include
   colors that detect the previous grayscale coefficients and rounding errors.
-- The edge map caps the magnitude at 255 and preserves alpha. Alpha does not
-  enter the intensity calculation.
+- The gradient PNGs show `min(abs(Gx),255)` and `min(abs(Gy),255)`, because a
+  grayscale PNG cannot store a negative intensity. The signed, unclipped Gx
+  and Gy values still enter `sqrt(Gx*Gx + Gy*Gy)`. Clipping either sum before
+  this calculation would give the wrong final magnitude.
+- The final `outImg_<basename>` caps the magnitude at 255 and preserves alpha.
+  Alpha does not enter the intensity calculation. `outImg_Gx_<basename>` and
+  `outImg_Gy_<basename>` contain one grayscale byte per pixel and use
+  `lodepng_encode_file(..., LCT_GREY, 8)`, matching the lecturer's grayscale
+  encoding example. The final RGBA buffer has four bytes per pixel.
+- Explain the `c_` host buffers, the `d_` device buffers and the transfers
+  between them. Each buffer is allocated for its own pixel format and freed
+  when processing that image finishes.
 - Blocks contain 256 threads, and the block count rounds the pixel count up.
   Threads past the final pixel return through the bounds check. Using image
   height as the block's thread count can exceed a GPU's block limit, so this

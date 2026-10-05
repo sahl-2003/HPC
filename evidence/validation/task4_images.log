@@ -1,73 +1,136 @@
 GPU: Tesla T4
 
-/tmp/tmpw29w08_s/black.png: 3x3; 1 x blocks; 256 threads/block
-CPU compute: 0.001 ms; CUDA kernel: 0.165 ms; CUDA transfers + kernel: 0.277 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_black.png
+/tmp/tmpjw7uhspa/black.png: 3x3; 1 x blocks; 256 threads/block
+CPU compute: 0.001 ms; CUDA kernel: 0.115 ms; CUDA transfers + kernel: 0.190 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_black.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_black.png
+Output: /tmp/tmpjw7uhspa/outImg_black.png
 
-/tmp/tmpw29w08_s/white.png: 3x3; 1 x blocks; 256 threads/block
-CPU compute: 0.001 ms; CUDA kernel: 0.020 ms; CUDA transfers + kernel: 0.129 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_white.png
+/tmp/tmpjw7uhspa/white.png: 3x3; 1 x blocks; 256 threads/block
+CPU compute: 0.001 ms; CUDA kernel: 0.013 ms; CUDA transfers + kernel: 0.062 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_white.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_white.png
+Output: /tmp/tmpjw7uhspa/outImg_white.png
 
-/tmp/tmpw29w08_s/single.png: 1x1; 1 x blocks; 256 threads/block
-CPU compute: 0.000 ms; CUDA kernel: 0.015 ms; CUDA transfers + kernel: 0.051 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_single.png
+/tmp/tmpjw7uhspa/single.png: 1x1; 1 x blocks; 256 threads/block
+CPU compute: 0.000 ms; CUDA kernel: 0.012 ms; CUDA transfers + kernel: 0.058 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_single.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_single.png
+Output: /tmp/tmpjw7uhspa/outImg_single.png
 
-/tmp/tmpw29w08_s/wide.png: 6x4; 1 x blocks; 256 threads/block
-CPU compute: 0.002 ms; CUDA kernel: 0.031 ms; CUDA transfers + kernel: 0.065 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_wide.png
+/tmp/tmpjw7uhspa/wide.png: 6x4; 1 x blocks; 256 threads/block
+CPU compute: 0.001 ms; CUDA kernel: 0.011 ms; CUDA transfers + kernel: 0.058 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_wide.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_wide.png
+Output: /tmp/tmpjw7uhspa/outImg_wide.png
 
-/tmp/tmpw29w08_s/random_2_5.png: 2x5; 1 x blocks; 256 threads/block
-CPU compute: 0.001 ms; CUDA kernel: 0.016 ms; CUDA transfers + kernel: 0.050 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_random_2_5.png
+/tmp/tmpjw7uhspa/random_2_5.png: 2x5; 1 x blocks; 256 threads/block
+CPU compute: 0.001 ms; CUDA kernel: 0.012 ms; CUDA transfers + kernel: 0.067 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_random_2_5.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_random_2_5.png
+Output: /tmp/tmpjw7uhspa/outImg_random_2_5.png
 
-/tmp/tmpw29w08_s/random_17_19.png: 17x19; 2 x blocks; 256 threads/block
-CPU compute: 0.019 ms; CUDA kernel: 0.016 ms; CUDA transfers + kernel: 0.052 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_random_17_19.png
+/tmp/tmpjw7uhspa/random_17_19.png: 17x19; 2 x blocks; 256 threads/block
+CPU compute: 0.010 ms; CUDA kernel: 0.014 ms; CUDA transfers + kernel: 0.064 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_random_17_19.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_random_17_19.png
+Output: /tmp/tmpjw7uhspa/outImg_random_17_19.png
 
-/tmp/tmpw29w08_s/random_1025_2.png: 1025x2; 9 x blocks; 256 threads/block
-CPU compute: 0.117 ms; CUDA kernel: 0.016 ms; CUDA transfers + kernel: 0.059 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_random_1025_2.png
+/tmp/tmpjw7uhspa/random_1025_2.png: 1025x2; 9 x blocks; 256 threads/block
+CPU compute: 0.053 ms; CUDA kernel: 0.013 ms; CUDA transfers + kernel: 0.065 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_random_1025_2.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_random_1025_2.png
+Output: /tmp/tmpjw7uhspa/outImg_random_1025_2.png
 
-/tmp/tmpw29w08_s/colour_weights.png: 13x7; 1 x blocks; 256 threads/block
-CPU compute: 0.006 ms; CUDA kernel: 0.016 ms; CUDA transfers + kernel: 0.053 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_colour_weights.png
+/tmp/tmpjw7uhspa/colour_weights.png: 13x7; 1 x blocks; 256 threads/block
+CPU compute: 0.003 ms; CUDA kernel: 0.013 ms; CUDA transfers + kernel: 0.060 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_colour_weights.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_colour_weights.png
+Output: /tmp/tmpjw7uhspa/outImg_colour_weights.png
+
+/tmp/tmpjw7uhspa/x_increasing.png: 7x5; 1 x blocks; 256 threads/block
+CPU compute: 0.002 ms; CUDA kernel: 0.012 ms; CUDA transfers + kernel: 0.058 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_x_increasing.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_x_increasing.png
+Output: /tmp/tmpjw7uhspa/outImg_x_increasing.png
+
+/tmp/tmpjw7uhspa/x_decreasing.png: 7x5; 1 x blocks; 256 threads/block
+CPU compute: 0.002 ms; CUDA kernel: 0.014 ms; CUDA transfers + kernel: 0.070 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_x_decreasing.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_x_decreasing.png
+Output: /tmp/tmpjw7uhspa/outImg_x_decreasing.png
+
+/tmp/tmpjw7uhspa/y_increasing.png: 7x5; 1 x blocks; 256 threads/block
+CPU compute: 0.002 ms; CUDA kernel: 0.013 ms; CUDA transfers + kernel: 0.061 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_y_increasing.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_y_increasing.png
+Output: /tmp/tmpjw7uhspa/outImg_y_increasing.png
+
+/tmp/tmpjw7uhspa/y_decreasing.png: 7x5; 1 x blocks; 256 threads/block
+CPU compute: 0.002 ms; CUDA kernel: 0.014 ms; CUDA transfers + kernel: 0.060 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_y_decreasing.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_y_decreasing.png
+Output: /tmp/tmpjw7uhspa/outImg_y_decreasing.png
+
+/tmp/tmpjw7uhspa/patch_6_8.png: 3x3; 1 x blocks; 256 threads/block
+CPU compute: 0.001 ms; CUDA kernel: 0.013 ms; CUDA transfers + kernel: 0.062 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_patch_6_8.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_patch_6_8.png
+Output: /tmp/tmpjw7uhspa/outImg_patch_6_8.png
 
 /content/HPC_Task_04/Practical Task/Task 04/images/checkerboard.png: 257x193; 194 x blocks; 256 threads/block
-CPU compute: 2.678 ms; CUDA kernel: 0.030 ms; CUDA transfers + kernel: 0.174 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_checkerboard.png
+CPU compute: 1.878 ms; CUDA kernel: 0.013 ms; CUDA transfers + kernel: 0.192 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_checkerboard.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_checkerboard.png
+Output: /tmp/tmpjw7uhspa/outImg_checkerboard.png
 
 /content/HPC_Task_04/Practical Task/Task 04/images/download.png: 300x300; 352 x blocks; 256 threads/block
-CPU compute: 5.392 ms; CUDA kernel: 0.018 ms; CUDA transfers + kernel: 0.248 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_download.png
+CPU compute: 2.874 ms; CUDA kernel: 0.020 ms; CUDA transfers + kernel: 0.335 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_download.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_download.png
+Output: /tmp/tmpjw7uhspa/outImg_download.png
 
 /content/HPC_Task_04/Practical Task/Task 04/images/gradient.png: 640x480; 1200 x blocks; 256 threads/block
-CPU compute: 17.514 ms; CUDA kernel: 0.042 ms; CUDA transfers + kernel: 0.682 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_gradient.png
+CPU compute: 10.170 ms; CUDA kernel: 0.036 ms; CUDA transfers + kernel: 0.989 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_gradient.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_gradient.png
+Output: /tmp/tmpjw7uhspa/outImg_gradient.png
 
 /content/HPC_Task_04/Practical Task/Task 04/images/shapes.png: 512x384; 768 x blocks; 256 threads/block
-CPU compute: 10.943 ms; CUDA kernel: 0.029 ms; CUDA transfers + kernel: 0.521 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_shapes.png
+CPU compute: 6.542 ms; CUDA kernel: 0.028 ms; CUDA transfers + kernel: 0.730 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_shapes.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_shapes.png
+Output: /tmp/tmpjw7uhspa/outImg_shapes.png
 
 /content/HPC_Task_04/Practical Task/Task 04/images/smarties.png: 413x356; 575 x blocks; 256 threads/block
-CPU compute: 7.705 ms; CUDA kernel: 0.028 ms; CUDA transfers + kernel: 0.404 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_smarties.png
+CPU compute: 5.488 ms; CUDA kernel: 0.022 ms; CUDA transfers + kernel: 0.555 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_smarties.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_smarties.png
+Output: /tmp/tmpjw7uhspa/outImg_smarties.png
 
 /content/HPC_Task_04/Practical Task/Task 04/images/sudoku.png: 558x563; 1228 x blocks; 256 threads/block
-CPU compute: 17.094 ms; CUDA kernel: 0.049 ms; CUDA transfers + kernel: 0.710 ms
-All RGBA bytes match CPU reference: PASS
-Output: /tmp/tmpw29w08_s/outImg_sudoku.png
+CPU compute: 10.617 ms; CUDA kernel: 0.040 ms; CUDA transfers + kernel: 0.868 ms
+Gx, Gy and all final RGBA bytes match CPU reference: PASS
+Gradient in X: /tmp/tmpjw7uhspa/outImg_Gx_sudoku.png
+Gradient in Y: /tmp/tmpjw7uhspa/outImg_Gy_sudoku.png
+Output: /tmp/tmpjw7uhspa/outImg_sudoku.png
 
-Successfully processed 14/14 PNG images.
+Successfully processed 19/19 PNG images.

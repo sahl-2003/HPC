@@ -6,12 +6,17 @@
     {
       "test": "Task 4 full pixel oracle",
       "status": "PASS",
-      "details": "14 PNGs, zero padding, saturation, alpha and non-multiple sizes"
+      "details": "19 inputs and 57 output PNGs; Gx, Gy and final, zero padding, saturation, alpha and non-multiple sizes"
+    },
+    {
+      "test": "Task 4 gradient axes and 6-8-10 example",
+      "status": "PASS",
+      "details": "increasing/decreasing x and y ramps; known centre Gx=6, Gy=8, final=10"
     },
     {
       "test": "Task 4 corrupt files and invalid paths",
       "status": "PASS",
-      "details": "reports failures, continues to valid image, rejects name collisions"
+      "details": "continues to valid image; rejects duplicate and cross-map names before writing; permits non-colliding prefixed names"
     }
   ],
   "run_task": 4,
