@@ -1,0 +1,34 @@
+[
+  {
+    "task": 1,
+    "file": "Task_01.mp4",
+    "captured_frames": 100,
+    "capture": "Live Colab browser viewport, continuous captures during actual cell execution and output display",
+    "timing": "Original elapsed intervals retained; variable frame rate",
+    "decoded_without_errors": true
+  },
+  {
+    "task": 2,
+    "file": "Task_02.mp4",
+    "captured_frames": 100,
+    "capture": "Live Colab browser viewport, continuous captures during actual cell execution and output display",
+    "timing": "Original elapsed intervals retained; variable frame rate",
+    "decoded_without_errors": true
+  },
+  {
+    "task": 3,
+    "file": "Task_03.mp4",
+    "captured_frames": 100,
+    "capture": "Live Colab browser viewport, continuous captures during actual cell execution and output display",
+    "timing": "Original elapsed intervals retained; variable frame rate",
+    "decoded_without_errors": true
+  },
+  {
+    "task": 4,
+    "file": "Task_04.mp4",
+    "captured_frames": 110,
+    "capture": "Live Colab browser viewport, continuous captures during actual cell execution and output display",
+    "timing": "Original elapsed intervals retained; variable frame rate",
+    "decoded_without_errors": true
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "checked_resources": 15,
+  "notebooks": [
+    "Task_01.ipynb",
+    "Task_02.ipynb",
+    "Task_03.ipynb",
+    "Task_04.ipynb"
+  ],
+  "checks": [
+    "Git-stored resource checksums equal notebook manifests",
+    "Bundled copies equal manifest checksums",
+    "Notebook C and CUDA source cells equal separate source files",
+    "Each notebook requests a T4 GPU runtime"
+  ]
+}

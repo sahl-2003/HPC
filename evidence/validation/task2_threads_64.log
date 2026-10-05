@@ -1,0 +1,180 @@
+
+Pair 1: A=3x4 B=3x4
+Addition: 3x4; threads requested=64 capped=3 actual=3; compute=0.000125 s
+Subtraction: 3x4; threads requested=64 capped=3 actual=3; compute=0.000030 s
+Element-wise multiplication: 3x4; threads requested=64 capped=3 actual=3; compute=0.000055 s
+Element-wise division: 3x4; threads requested=64 capped=3 actual=3; compute=0.000053 s
+Transpose A: 4x3; threads requested=64 capped=4 actual=4; compute=0.000088 s
+Transpose B: 4x3; threads requested=64 capped=4 actual=4; compute=0.000055 s
+
+Pair 2: A=4x6 B=6x2
+Transpose A: 6x4; threads requested=64 capped=6 actual=6; compute=0.000151 s
+Transpose B: 2x6; threads requested=64 capped=2 actual=2; compute=0.000619 s
+Matrix multiplication: 4x2; threads requested=64 capped=4 actual=4; compute=0.000082 s
+
+Pair 3: A=5x5 B=5x5
+Addition: 5x5; threads requested=64 capped=5 actual=5; compute=0.000106 s
+Subtraction: 5x5; threads requested=64 capped=5 actual=5; compute=0.000068 s
+Element-wise multiplication: 5x5; threads requested=64 capped=5 actual=5; compute=0.000068 s
+Element-wise division: 5x5; threads requested=64 capped=5 actual=5; compute=0.000085 s
+Transpose A: 5x5; threads requested=64 capped=5 actual=5; compute=0.000067 s
+Transpose B: 5x5; threads requested=64 capped=5 actual=5; compute=0.000074 s
+Matrix multiplication: 5x5; threads requested=64 capped=5 actual=5; compute=0.000063 s
+
+Pair 4: A=8x4 B=4x8
+Transpose A: 4x8; threads requested=64 capped=4 actual=4; compute=0.000053 s
+Transpose B: 8x4; threads requested=64 capped=8 actual=8; compute=0.000181 s
+Matrix multiplication: 8x8; threads requested=64 capped=8 actual=8; compute=0.000082 s
+
+Pair 5: A=6x6 B=6x6
+Addition: 6x6; threads requested=64 capped=6 actual=6; compute=0.000144 s
+Subtraction: 6x6; threads requested=64 capped=6 actual=6; compute=0.000064 s
+Element-wise multiplication: 6x6; threads requested=64 capped=6 actual=6; compute=0.000071 s
+Element-wise division: 6x6; threads requested=64 capped=6 actual=6; compute=0.000069 s
+Transpose A: 6x6; threads requested=64 capped=6 actual=6; compute=0.000103 s
+Transpose B: 6x6; threads requested=64 capped=6 actual=6; compute=0.000081 s
+Matrix multiplication: 6x6; threads requested=64 capped=6 actual=6; compute=0.000069 s
+
+Pair 6: A=7x3 B=7x3
+Addition: 7x3; threads requested=64 capped=7 actual=7; compute=0.000170 s
+Subtraction: 7x3; threads requested=64 capped=7 actual=7; compute=0.000103 s
+Element-wise multiplication: 7x3; threads requested=64 capped=7 actual=7; compute=0.000114 s
+Element-wise division: 7x3; threads requested=64 capped=7 actual=7; compute=0.000129 s
+Transpose A: 3x7; threads requested=64 capped=3 actual=3; compute=0.000095 s
+Transpose B: 3x7; threads requested=64 capped=3 actual=3; compute=0.000036 s
+
+Pair 7: A=10x8 B=8x10
+Transpose A: 8x10; threads requested=64 capped=8 actual=8; compute=0.000244 s
+Transpose B: 10x8; threads requested=64 capped=10 actual=10; compute=0.000231 s
+Matrix multiplication: 10x10; threads requested=64 capped=10 actual=10; compute=0.000135 s
+
+Pair 8: A=6x4 B=6x4
+Addition: 6x4; threads requested=64 capped=6 actual=6; compute=0.000114 s
+Subtraction: 6x4; threads requested=64 capped=6 actual=6; compute=0.000092 s
+Element-wise multiplication: 6x4; threads requested=64 capped=6 actual=6; compute=0.000088 s
+Element-wise division: 6x4; threads requested=64 capped=6 actual=6; compute=0.000051 s
+Transpose A: 4x6; threads requested=64 capped=4 actual=4; compute=0.000106 s
+Transpose B: 4x6; threads requested=64 capped=4 actual=4; compute=0.000034 s
+
+Pair 9: A=12x12 B=12x12
+Addition: 12x12; threads requested=64 capped=12 actual=12; compute=0.000385 s
+Subtraction: 12x12; threads requested=64 capped=12 actual=12; compute=0.000201 s
+Element-wise multiplication: 12x12; threads requested=64 capped=12 actual=12; compute=0.000184 s
+Element-wise division: 12x12; threads requested=64 capped=12 actual=12; compute=0.000159 s
+Transpose A: 12x12; threads requested=64 capped=12 actual=12; compute=0.000189 s
+Transpose B: 12x12; threads requested=64 capped=12 actual=12; compute=0.000174 s
+Matrix multiplication: 12x12; threads requested=64 capped=12 actual=12; compute=0.000140 s
+
+Pair 10: A=5x7 B=7x2
+Transpose A: 7x5; threads requested=64 capped=7 actual=7; compute=0.000199 s
+Transpose B: 2x7; threads requested=64 capped=2 actual=2; compute=0.000330 s
+Matrix multiplication: 5x2; threads requested=64 capped=5 actual=5; compute=0.000132 s
+
+Pair 11: A=4x4 B=4x4
+Addition: 4x4; threads requested=64 capped=4 actual=4; compute=0.000080 s
+Subtraction: 4x4; threads requested=64 capped=4 actual=4; compute=0.000055 s
+Element-wise multiplication: 4x4; threads requested=64 capped=4 actual=4; compute=0.000045 s
+Element-wise division: 4x4; threads requested=64 capped=4 actual=4; compute=0.000030 s
+Transpose A: 4x4; threads requested=64 capped=4 actual=4; compute=0.000047 s
+Transpose B: 4x4; threads requested=64 capped=4 actual=4; compute=0.000043 s
+Matrix multiplication: 4x4; threads requested=64 capped=4 actual=4; compute=0.000036 s
+
+Pair 12: A=6x6 B=3x3
+Transpose A: 6x6; threads requested=64 capped=6 actual=6; compute=0.000116 s
+Transpose B: 3x3; threads requested=64 capped=3 actual=3; compute=0.000049 s
+
+Pair 13: A=4x5 B=5x4
+Transpose A: 5x4; threads requested=64 capped=5 actual=5; compute=0.000086 s
+Transpose B: 4x5; threads requested=64 capped=4 actual=4; compute=0.000052 s
+Matrix multiplication: 4x4; threads requested=64 capped=4 actual=4; compute=0.000039 s
+
+Pair 14: A=7x3 B=7x3
+Addition: 7x3; threads requested=64 capped=7 actual=7; compute=0.000130 s
+Subtraction: 7x3; threads requested=64 capped=7 actual=7; compute=0.000121 s
+Element-wise multiplication: 7x3; threads requested=64 capped=7 actual=7; compute=0.000095 s
+Element-wise division: 7x3; threads requested=64 capped=7 actual=7; compute=0.000130 s
+Transpose A: 3x7; threads requested=64 capped=3 actual=3; compute=0.000081 s
+Transpose B: 3x7; threads requested=64 capped=3 actual=3; compute=0.000035 s
+
+Pair 15: A=6x8 B=8x6
+Transpose A: 8x6; threads requested=64 capped=8 actual=8; compute=0.000182 s
+Transpose B: 6x8; threads requested=64 capped=6 actual=6; compute=0.000089 s
+Matrix multiplication: 6x6; threads requested=64 capped=6 actual=6; compute=0.000088 s
+
+Pair 16: A=6x4 B=6x4
+Addition: 6x4; threads requested=64 capped=6 actual=6; compute=0.000069 s
+Subtraction: 6x4; threads requested=64 capped=6 actual=6; compute=0.000071 s
+Element-wise multiplication: 6x4; threads requested=64 capped=6 actual=6; compute=0.000068 s
+Element-wise division: 6x4; threads requested=64 capped=6 actual=6; compute=0.000069 s
+Transpose A: 4x6; threads requested=64 capped=4 actual=4; compute=0.000044 s
+Transpose B: 4x6; threads requested=64 capped=4 actual=4; compute=0.000043 s
+
+Pair 17: A=5x5 B=5x5
+Addition: 5x5; threads requested=64 capped=5 actual=5; compute=0.000083 s
+Subtraction: 5x5; threads requested=64 capped=5 actual=5; compute=0.000062 s
+Element-wise multiplication: 5x5; threads requested=64 capped=5 actual=5; compute=0.000062 s
+Element-wise division: 5x5; threads requested=64 capped=5 actual=5; compute=0.000070 s
+Transpose A: 5x5; threads requested=64 capped=5 actual=5; compute=0.000083 s
+Transpose B: 5x5; threads requested=64 capped=5 actual=5; compute=0.000109 s
+Matrix multiplication: 5x5; threads requested=64 capped=5 actual=5; compute=0.000085 s
+
+Pair 18: A=3x3 B=3x3
+Addition: 3x3; threads requested=64 capped=3 actual=3; compute=0.000068 s
+Subtraction: 3x3; threads requested=64 capped=3 actual=3; compute=0.000038 s
+Element-wise multiplication: 3x3; threads requested=64 capped=3 actual=3; compute=0.000039 s
+Element-wise division: 3x3; threads requested=64 capped=3 actual=3; compute=0.000038 s
+Transpose A: 3x3; threads requested=64 capped=3 actual=3; compute=0.000039 s
+Transpose B: 3x3; threads requested=64 capped=3 actual=3; compute=0.000038 s
+Matrix multiplication: 3x3; threads requested=64 capped=3 actual=3; compute=0.000039 s
+
+Pair 19: A=9x5 B=5x9
+Transpose A: 5x9; threads requested=64 capped=5 actual=5; compute=0.000097 s
+Transpose B: 9x5; threads requested=64 capped=9 actual=9; compute=0.000254 s
+Matrix multiplication: 9x9; threads requested=64 capped=9 actual=9; compute=0.000146 s
+
+Pair 20: A=3x6 B=3x6
+Addition: 3x6; threads requested=64 capped=3 actual=3; compute=0.000119 s
+Subtraction: 3x6; threads requested=64 capped=3 actual=3; compute=0.000038 s
+Element-wise multiplication: 3x6; threads requested=64 capped=3 actual=3; compute=0.000036 s
+Element-wise division: 3x6; threads requested=64 capped=3 actual=3; compute=0.000036 s
+Transpose A: 6x3; threads requested=64 capped=6 actual=6; compute=0.000121 s
+Transpose B: 6x3; threads requested=64 capped=6 actual=6; compute=0.000080 s
+
+Pair 21: A=4x4 B=4x4
+Addition: 4x4; threads requested=64 capped=4 actual=4; compute=0.000085 s
+Subtraction: 4x4; threads requested=64 capped=4 actual=4; compute=0.000058 s
+Element-wise multiplication: 4x4; threads requested=64 capped=4 actual=4; compute=0.000043 s
+Element-wise division: 4x4; threads requested=64 capped=4 actual=4; compute=0.000043 s
+Transpose A: 4x4; threads requested=64 capped=4 actual=4; compute=0.000038 s
+Transpose B: 4x4; threads requested=64 capped=4 actual=4; compute=0.000056 s
+Matrix multiplication: 4x4; threads requested=64 capped=4 actual=4; compute=0.000044 s
+
+Pair 22: A=6x2 B=2x6
+Transpose A: 2x6; threads requested=64 capped=2 actual=2; compute=0.000505 s
+Transpose B: 6x2; threads requested=64 capped=6 actual=6; compute=0.002031 s
+Matrix multiplication: 6x6; threads requested=64 capped=6 actual=6; compute=0.000072 s
+
+Pair 23: A=8x4 B=4x8
+Transpose A: 4x8; threads requested=64 capped=4 actual=4; compute=0.000062 s
+Transpose B: 8x4; threads requested=64 capped=8 actual=8; compute=0.000179 s
+Matrix multiplication: 8x8; threads requested=64 capped=8 actual=8; compute=0.000132 s
+
+Pair 24: A=6x6 B=6x6
+Addition: 6x6; threads requested=64 capped=6 actual=6; compute=0.000122 s
+Subtraction: 6x6; threads requested=64 capped=6 actual=6; compute=0.000107 s
+Element-wise multiplication: 6x6; threads requested=64 capped=6 actual=6; compute=0.000070 s
+Element-wise division: 6x6; threads requested=64 capped=6 actual=6; compute=0.000067 s
+Transpose A: 6x6; threads requested=64 capped=6 actual=6; compute=0.000078 s
+Transpose B: 6x6; threads requested=64 capped=6 actual=6; compute=0.000074 s
+Matrix multiplication: 6x6; threads requested=64 capped=6 actual=6; compute=0.000082 s
+
+Pair 25: A=10x10 B=10x10
+Addition: 10x10; threads requested=64 capped=10 actual=10; compute=0.000318 s
+Subtraction: 10x10; threads requested=64 capped=10 actual=10; compute=0.000151 s
+Element-wise multiplication: 10x10; threads requested=64 capped=10 actual=10; compute=0.000178 s
+Element-wise division: 10x10; threads requested=64 capped=10 actual=10; compute=0.000174 s
+Transpose A: 10x10; threads requested=64 capped=10 actual=10; compute=0.000175 s
+Transpose B: 10x10; threads requested=64 capped=10 actual=10; compute=0.000178 s
+Matrix multiplication: 10x10; threads requested=64 capped=10 actual=10; compute=0.000198 s
+
+Processed 50 matrices in 25 pairs. Output: results.txt

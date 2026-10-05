@@ -1,0 +1,124 @@
+{
+  "status": "PASS",
+  "python": "3.13.15",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+  "tests": [
+    {
+      "test": "Task 1 supplied dataset, 1 threads",
+      "status": "PASS",
+      "details": "120000 words, 94 unique, oracle equal"
+    },
+    {
+      "test": "Task 1 supplied dataset, 2 threads",
+      "status": "PASS",
+      "details": "120000 words, 94 unique, oracle equal"
+    },
+    {
+      "test": "Task 1 supplied dataset, 3 threads",
+      "status": "PASS",
+      "details": "120000 words, 94 unique, oracle equal"
+    },
+    {
+      "test": "Task 1 supplied dataset, 7 threads",
+      "status": "PASS",
+      "details": "120000 words, 94 unique, oracle equal"
+    },
+    {
+      "test": "Task 1 supplied dataset, 16 threads",
+      "status": "PASS",
+      "details": "120000 words, 94 unique, oracle equal"
+    },
+    {
+      "test": "Task 1 word boundaries and remainder slices",
+      "status": "PASS",
+      "details": "20,000-character word, punctuation, digits, CRLF, no final newline"
+    },
+    {
+      "test": "Task 1 empty file",
+      "status": "PASS",
+      "details": "header and zero counts"
+    },
+    {
+      "test": "Task 1 invalid arguments and missing file",
+      "status": "PASS",
+      "details": "clear errors and nonzero exits"
+    },
+    {
+      "test": "Task 2 supplied matrices, 1 requested threads",
+      "status": "PASS",
+      "details": "25 pairs, all operations equal NumPy"
+    },
+    {
+      "test": "Task 2 supplied matrices, 4 requested threads",
+      "status": "PASS",
+      "details": "25 pairs, all operations equal NumPy"
+    },
+    {
+      "test": "Task 2 supplied matrices, 64 requested threads",
+      "status": "PASS",
+      "details": "25 pairs, all operations equal NumPy"
+    },
+    {
+      "test": "Task 2 operation applicability, NaN and thread cap",
+      "status": "PASS",
+      "details": "square, rectangular, incompatible and 1-row matrices"
+    },
+    {
+      "test": "Task 2 malformed headers, row counts and numeric tokens",
+      "status": "PASS",
+      "details": "13 invalid files rejected"
+    },
+    {
+      "test": "Task 3 1 passwords",
+      "status": "PASS",
+      "details": "exact recovery and input order, independent encryption oracle"
+    },
+    {
+      "test": "Task 3 2 passwords",
+      "status": "PASS",
+      "details": "exact recovery and input order, independent encryption oracle"
+    },
+    {
+      "test": "Task 3 257 passwords",
+      "status": "PASS",
+      "details": "exact recovery and input order, independent encryption oracle"
+    },
+    {
+      "test": "Task 3 10000 passwords",
+      "status": "PASS",
+      "details": "exact recovery and input order, independent encryption oracle"
+    },
+    {
+      "test": "Task 3 67600 passwords",
+      "status": "PASS",
+      "details": "exact recovery and input order, independent encryption oracle"
+    },
+    {
+      "test": "Task 3 invalid and uncrackable records",
+      "status": "PASS",
+      "details": "malformed files rejected; NOT_FOUND preserves line"
+    },
+    {
+      "test": "Task 3 lecturer generator compatibility",
+      "status": "PASS",
+      "details": "25 generated encrypted records verified"
+    },
+    {
+      "test": "Task 4 full pixel oracle",
+      "status": "PASS",
+      "details": "10 PNGs, zero padding, saturation, alpha and non-multiple sizes"
+    },
+    {
+      "test": "Task 4 corrupt files and invalid paths",
+      "status": "PASS",
+      "details": "reports failures, continues to valid image, rejects name collisions"
+    },
+    {
+      "test": "CPU memory and undefined-behaviour checks",
+      "status": "PASS",
+      "details": "AddressSanitizer and UBSan on both supplied datasets"
+    }
+  ],
+  "run_task": 0,
+  "gpu": "Tesla T4, 580.82.07"
+}

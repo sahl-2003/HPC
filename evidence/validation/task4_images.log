@@ -1,0 +1,53 @@
+GPU: Tesla T4
+
+/tmp/tmp5llz9sup/black.png: 3x3; 1 x blocks; 256 threads/block
+CPU compute: 0.001 ms; CUDA kernel: 0.147 ms; CUDA transfers + kernel: 0.224 ms
+All RGBA bytes match CPU reference: PASS
+Output: /tmp/tmp5llz9sup/outImg_black.png
+
+/tmp/tmp5llz9sup/white.png: 3x3; 1 x blocks; 256 threads/block
+CPU compute: 0.001 ms; CUDA kernel: 0.021 ms; CUDA transfers + kernel: 0.087 ms
+All RGBA bytes match CPU reference: PASS
+Output: /tmp/tmp5llz9sup/outImg_white.png
+
+/tmp/tmp5llz9sup/single.png: 1x1; 1 x blocks; 256 threads/block
+CPU compute: 0.000 ms; CUDA kernel: 0.013 ms; CUDA transfers + kernel: 0.044 ms
+All RGBA bytes match CPU reference: PASS
+Output: /tmp/tmp5llz9sup/outImg_single.png
+
+/tmp/tmp5llz9sup/wide.png: 6x4; 1 x blocks; 256 threads/block
+CPU compute: 0.001 ms; CUDA kernel: 0.022 ms; CUDA transfers + kernel: 0.055 ms
+All RGBA bytes match CPU reference: PASS
+Output: /tmp/tmp5llz9sup/outImg_wide.png
+
+/tmp/tmp5llz9sup/random_2_5.png: 2x5; 1 x blocks; 256 threads/block
+CPU compute: 0.001 ms; CUDA kernel: 0.012 ms; CUDA transfers + kernel: 0.041 ms
+All RGBA bytes match CPU reference: PASS
+Output: /tmp/tmp5llz9sup/outImg_random_2_5.png
+
+/tmp/tmp5llz9sup/random_17_19.png: 17x19; 2 x blocks; 256 threads/block
+CPU compute: 0.010 ms; CUDA kernel: 0.013 ms; CUDA transfers + kernel: 0.043 ms
+All RGBA bytes match CPU reference: PASS
+Output: /tmp/tmp5llz9sup/outImg_random_17_19.png
+
+/tmp/tmp5llz9sup/random_1025_2.png: 1025x2; 9 x blocks; 256 threads/block
+CPU compute: 0.057 ms; CUDA kernel: 0.012 ms; CUDA transfers + kernel: 0.046 ms
+All RGBA bytes match CPU reference: PASS
+Output: /tmp/tmp5llz9sup/outImg_random_1025_2.png
+
+/content/HPC/Practical Task/Task 04/images/checkerboard.png: 257x193; 194 x blocks; 256 threads/block
+CPU compute: 1.619 ms; CUDA kernel: 0.012 ms; CUDA transfers + kernel: 0.183 ms
+All RGBA bytes match CPU reference: PASS
+Output: /tmp/tmp5llz9sup/outImg_checkerboard.png
+
+/content/HPC/Practical Task/Task 04/images/gradient.png: 640x480; 1200 x blocks; 256 threads/block
+CPU compute: 14.651 ms; CUDA kernel: 0.035 ms; CUDA transfers + kernel: 0.754 ms
+All RGBA bytes match CPU reference: PASS
+Output: /tmp/tmp5llz9sup/outImg_gradient.png
+
+/content/HPC/Practical Task/Task 04/images/shapes.png: 512x384; 768 x blocks; 256 threads/block
+CPU compute: 6.583 ms; CUDA kernel: 0.026 ms; CUDA transfers + kernel: 0.466 ms
+All RGBA bytes match CPU reference: PASS
+Output: /tmp/tmp5llz9sup/outImg_shapes.png
+
+Successfully processed 10/10 PNG images.

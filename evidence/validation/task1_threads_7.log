@@ -1,0 +1,11 @@
+Thread 0: 11 slices, 23570 words
+Thread 1: 14 slices, 29957 words
+Thread 2: 5 slices, 10686 words
+Thread 3: 17 slices, 36494 words
+Thread 4: 1 slices, 2143 words
+Thread 5: 7 slices, 15003 words
+Thread 6: 1 slices, 2147 words
+Requested threads: 7; actual threads: 7
+Total words: 120000; unique words: 94
+Counting and merge time: 0.030882 seconds
+Output: result.txt

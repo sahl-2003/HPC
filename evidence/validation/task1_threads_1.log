@@ -1,0 +1,5 @@
+Thread 0: 8 slices, 120000 words
+Requested threads: 1; actual threads: 1
+Total words: 120000; unique words: 94
+Counting and merge time: 0.045915 seconds
+Output: result.txt
