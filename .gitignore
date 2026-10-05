@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+WordOccurrence
+MatrixOperations
+PWCrack
+SobelEdge
+PasswordGeneratorToText
+*.o
+*.mp4
+*.webm
+*.zip
+evidence/validation/
