@@ -2,7 +2,7 @@
 
 Thaslim Mohammed Sahl | 2638120 | 6CS005
 
-[Open task notebook in Colab](https://colab.research.google.com/github/sahl-2003/HPC/blob/main/Practical%20Task/Task%2003/Task_03.ipynb)
+[Open task notebook in Colab](https://colab.research.google.com/drive/1MpOg0Lu-xRw5LR4jO0s7i9EdtIcUu-lQ)
 
 [Executed Colab notebook](https://colab.research.google.com/drive/1MpOg0Lu-xRw5LR4jO0s7i9EdtIcUu-lQ)
 

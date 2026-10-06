@@ -11,16 +11,13 @@ original image in four views.
   does not identify the image's original author or licence.
 The input is stored without resizing or conversion. `public_images.json`
 contains only `download.png` and records its URL, dimensions and SHA-256
-checksum. It is the only PNG input included in this notebook's resource copy.
+checksum. It is the only PNG input used in the notebook demonstration.
 
-Setup downloads this public image again and verifies its checksum and PNG
-dimensions. If a public host is unavailable or its bytes change, the notebook
-prints that it is using its verified bundled copy. `image_downloads.json` records
-which mode was used during that run. The isolated
-`/content/HPC_Task_04_OneImage` folder keeps resources from earlier multi-image
-notebooks out of the demonstration and checks.
+Upload `lodepng.cpp` and `lodepng.h` in the first cell. Setup downloads the
+public image and verifies its checksum. The notebook uses `/content/Task_04`.
+`image_downloads.json` retains the source details from the recorded execution.
 
-The independent validation cell separately creates thirteen small PNG fixtures
+The separate development validation creates thirteen small PNG fixtures
 in a temporary directory. They test zero padding, grayscale rounding,
 transparent pixels, both gradient directions and the brief's Gx=6, Gy=8,
 magnitude=10 example. Together with the single public input, this gives fourteen

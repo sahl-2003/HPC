@@ -8,6 +8,8 @@ NAME = '2638120_Thaslim_Mohammed_Sahl_High_Performance_Computing'
 def files_under(folder):
     for path in sorted(folder.rglob('*')):
         if path.is_file() and '.git' not in path.parts and '__pycache__' not in path.parts:
+            if path.name == 'Viva_Guide.md':
+                continue
             if path.suffix not in ('.zip', '.pyc'):
                 relative = path.relative_to(ROOT)
                 if relative.parts[0] == 'evidence' and path.name.startswith('figure_'):

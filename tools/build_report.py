@@ -27,25 +27,52 @@ def set_font(font,element,size=None):
     for attribute in ('asciiTheme','hAnsiTheme','eastAsiaTheme','cstheme'):
         fonts.attrib.pop(qn('w:'+attribute),None)
 
-def table_of_contents(doc):
-    doc.add_page_break()
-    doc.add_paragraph('Table of contents','TOC Heading')
+def index_field(doc, instruction):
     paragraph=doc.add_paragraph()
     for kind in ('begin','instruction','separate','end'):
         run=paragraph.add_run()
         if kind=='instruction':
             field=OxmlElement('w:instrText')
             field.set(qn('xml:space'),'preserve')
-            field.text=' TOC \\o "1-2" \\h \\z \\u '
+            field.text=instruction
         else:
             field=OxmlElement('w:fldChar')
             field.set(qn('w:fldCharType'),kind)
             if kind=='begin': field.set(qn('w:dirty'),'true')
         run._r.append(field)
+
+def table_of_contents(doc):
+    doc.add_page_break()
+    doc.add_paragraph('Table of contents','TOC Heading')
+    index_field(doc,' TOC \\o "1-2" \\h \\z \\u ')
     settings=doc.settings.element
     update=OxmlElement('w:updateFields'); update.set(qn('w:val'),'true')
     settings.append(update)
     doc.add_page_break()
+    doc.add_paragraph('Table of figures','TOC Heading')
+    index_field(doc,' TOC \\h \\z \\c "Figure" ')
+    doc.add_page_break()
+
+def figure_caption(doc, caption):
+    match=re.fullmatch(r'Figure (\d+)\. (.+)',caption)
+    assert match, caption
+    paragraph=doc.add_paragraph(style='Caption')
+    paragraph.add_run('Figure ')
+    for kind in ('begin','instruction','separate','number','end'):
+        run=paragraph.add_run()
+        if kind=='instruction':
+            field=OxmlElement('w:instrText')
+            field.set(qn('xml:space'),'preserve')
+            field.text=' SEQ Figure \\* ARABIC '
+            run._r.append(field)
+        elif kind=='number':
+            run.text=match[1]
+        else:
+            field=OxmlElement('w:fldChar')
+            field.set(qn('w:fldCharType'),kind)
+            run._r.append(field)
+    paragraph.add_run('. '+match[2])
+    return paragraph
 
 def link(doc,text,url):
     p=doc.add_paragraph()
@@ -88,7 +115,7 @@ def colab_capture(doc,filename,caption,explanation,max_height=5.35):
     paragraph.alignment=WD_ALIGN_PARAGRAPH.CENTER
     paragraph.paragraph_format.keep_with_next=True
     paragraph.paragraph_format.space_after=Pt(7)
-    paragraph=doc.add_paragraph(caption,'Caption')
+    paragraph=figure_caption(doc,caption)
     paragraph.paragraph_format.keep_with_next=True
     doc.add_paragraph(explanation)
 
@@ -104,7 +131,7 @@ assert any('gradient axes' in test['test'] for test in task4_manifest['tests']),
 task4_downloads=json.loads((TASKS/'Task 04'/'image_downloads.json').read_text())
 assert len(task4_downloads)==1 and task4_downloads[0]['filename']=='download.png', 'Task 04 must demonstrate exactly one public input image.'
 assert all(image['load_mode']=='live public download' for image in task4_downloads)
-git_colab=lambda n:f'https://colab.research.google.com/github/sahl-2003/HPC/blob/main/Practical%20Task/Task%20{n:02d}/Task_{n:02d}.ipynb'
+git_colab=lambda n:links.get(str(n),f'https://colab.research.google.com/github/sahl-2003/HPC/blob/main/Practical%20Task/Task%20{n:02d}/Task_{n:02d}.ipynb')
 
 task_content={
 1:{'title':'Word Occurrence Counting using Multithreading', 'source':'WordOccurrence.c',
@@ -117,7 +144,7 @@ task_content={
        'Only the work-claim index and allocation-failure flag need mutex protection. File bytes are read-only and count arrays belong to individual threads. pthread_join establishes that each local result is complete before the host reads it. The mutex is destroyed after all joins. Every word allocation, local array, merged array, thread array, and input buffer is released.'],
    'tests':['The supplied WordOccurrenceDataset.txt produced 120,000 words and 94 unique words. Results matched an independent Python Counter at 1, 2, 3, 7 and 16 threads, including their exact alphabetical order and total frequency.',
        'Boundary tests covered a 20,000-character word, CRLF, tabs, punctuation, digits, no final newline, and non-divisible workloads. An empty file produced a valid header with no word rows. Zero, negative, non-numeric, and out-of-range thread counts, missing files, and missing arguments returned errors.',
-       'AddressSanitizer and UndefinedBehaviorSanitizer passed on the supplied dataset with seven threads. Thread IDs and per-thread slice counts are printed for the viva; their distribution can vary with scheduling without changing the final frequencies.'],
+       'AddressSanitizer and UndefinedBehaviorSanitizer passed on the supplied dataset with seven threads. The program prints thread IDs and per-thread slice counts; their distribution can vary with scheduling without changing the final frequencies.'],
    'limits':['Counting and merging require memory proportional to the number of occurrences and local unique entries. Sorting takes O(W log W) across the collected words. File loading and the final merge are serial. The word definition is ASCII and does not perform Unicode language segmentation.',
        'The recorded single-run counting and merge times were 45.915 ms with one thread and 37.812 ms with two threads. These are observations from one run, not stable speedup estimates. Colab scheduling, allocation overhead, and serial work affect the times. More threads must not be assumed to improve performance.']},
 2:{'title':'Multiple operations with Matrices using multithreading','source':'MatrixOperations.c',
@@ -151,7 +178,7 @@ task_content={
 4:{'title':'Sobel Edge Detection using Cuda across many PNG images','source':'SobelEdge.cu',
    'command':'nvcc -O2 -arch=sm_75 lodepng.cpp SobelEdge.cu -o SobelEdge\nmkdir -p outputs\n./SobelEdge outputs images/download.png',
    'objective':['Use one public input image, download.png, to demonstrate the brief\'s four views: Original Image, Gradient in X direction, Gradient in Y direction and Sobel Edge Detection. The four panels are views of the same input. Save both gradient maps and the combined edge map at the original dimensions. The CUDA program also accepts multiple PNG paths when a batch is required.'],
-   'algorithm':['The notebook uses wget to download download.png (300x300) from the public image URL in the lecturer\'s last-class code. SHA-256 and PNG dimensions are checked before use; image_downloads.json records the source and load mode. This input requires no private GitHub login or Drive mount. LodePNG decodes the file into an RGBA host array, with its original licence notices retained.',
+   'algorithm':['The notebook uses wget to download download.png (300x300) from the public image URL in the lecturer\'s last-class code and checks its SHA-256 checksum before use. The input needs no GitHub login or Drive mount. After lodepng.cpp and lodepng.h are uploaded, LodePNG decodes the file into an RGBA host array, with its original licence notices retained.',
        'The last-class sample demonstrates PNG decoding, explicit CUDA memory transfers and rgbToGray; its final kernel stops at grayscale conversion. This implementation extends that workflow with the assessed Sobel convolution. Luminance uses the lecturer\'s 0.30R + 0.59G + 0.11B weights as (30*R + 59*G + 11*B) / 100, rounded down. Integer arithmetic gives identical CPU and GPU truncation. Gx is [-1,0,1; -2,0,2; -1,0,1] and Gy is [-1,-2,-1; 0,0,0; 1,2,1]. Out-of-image neighbours are zero.',
        'Gx measures left-to-right intensity changes and Gy measures top-to-bottom changes, following the written axis definitions. The kernel saves min(255, abs(Gx)) and min(255, abs(Gy)) in separate one-byte-per-pixel display buffers. The final magnitude uses the original signed sums: sqrt(Gx*Gx + Gy*Gy), then truncation and saturation at 255. Clipping a display map never changes that calculation. The final edge value fills RGB and preserves input alpha; the separate gradient maps contain grayscale intensity only.',
        'RGBA input and final output arrays each use width*height*4 bytes. Each gradient array uses width*height bytes. The x grid has ceil(pixel_count/256) blocks and a guard for padded threads. The command accepts any number of PNGs. Output names are outImg_, outImg_Gx_ and outImg_Gy_ followed by the input basename. The host rejects duplicate or colliding generated names before processing. Gradient encoding uses lodepng_encode_file with LCT_GREY, 8, matching the lecturer\'s grayscale-buffer workflow.'],
@@ -201,7 +228,7 @@ for section_ in doc.sections:
 styles=doc.styles
 for style in styles:
     if hasattr(style,'font'): set_font(style.font,style._element)
-for name in ['TOC Heading','TOC 1','TOC 2']:
+for name in ['TOC Heading','TOC 1','TOC 2','Table of Figures']:
     if name not in styles: styles.add_style(name,WD_STYLE_TYPE.PARAGRAPH)
     set_font(styles[name].font,styles[name]._element)
 styles['Normal'].font.size=Pt(12)
@@ -230,6 +257,10 @@ for name in ['TOC 1','TOC 2']:
     styles[name].paragraph_format.space_before=Pt(3 if name=='TOC 1' else 0)
     styles[name].paragraph_format.left_indent=Inches(0 if name=='TOC 1' else .2)
 styles['TOC 1'].font.bold=True
+styles['Table of Figures'].base_style=styles['Normal']
+styles['Table of Figures'].font.size=Pt(12)
+styles['Table of Figures'].paragraph_format.space_after=Pt(8)
+styles['Table of Figures'].paragraph_format.line_spacing=1.1
 for border in list(styles.element.iter(qn('w:pBdr'))):
     border.getparent().remove(border)
 doc.core_properties.title='High Performance Computing portfolio'
@@ -243,7 +274,7 @@ doc.add_heading('Execution and files',1)
 doc.add_paragraph('The programs use the file-handling, dynamic allocation, thread structures, mutexes, parallel loops, CUDA index calculation, and explicit host-device transfer patterns from the supplied weeks and code sir.txt. Python performs setup, fixture generation, verification and display. The assessed computations are in C and CUDA; the CUDA sources remain separate .cu files.')
 doc.add_paragraph('Task folders follow the Practical Task and Task 01 to Task 04 organisation. Output names used here are result.txt for word counts, results.txt for matrices, decrypted.txt for passwords, and outImg_ prefixed PNGs for edges. Task 04 adds outImg_Gx_ and outImg_Gy_ PNGs so all four illustrated views can be shown. No input resource requires mounting a private Google Drive folder.')
 link(doc,'GitHub project','https://github.com/sahl-2003/HPC')
-doc.add_paragraph('The GitHub project is private during development as requested. Notebook setup first attempts hosted project resources, then loads a checksum-verified compressed copy stored in the notebook. Task 04 separately downloads its one demonstration image from the lecturer\'s public URL without a GitHub login. The listed GitHub Colab links require repository access until the student approves a visibility change. The executed Colab notebooks are linked separately under each task.')
+doc.add_paragraph('Open the task notebook in Google Colab and run its first cell to upload the required files. Task 01 uses WordOccurrenceDataset.txt, Task 02 uses MatData.txt, and Task 03 uses passwords.txt and expected_passwords.txt. Task 04 uses lodepng.cpp and lodepng.h and downloads download.png from the public image URL. The notebook then writes the source, compiles the program, runs it and displays the output. Use a T4 GPU for the CUDA tasks. The GitHub notebook links require access to the private repository; local notebook files can be opened with Colab\'s Upload notebook option.')
 doc.add_heading('Validation result',1)
 doc.add_paragraph(f'All 23 initial test groups passed on the Tesla T4, including multiple CPU thread counts, all supplied matrix pairs, exhaustive recovery of the 67,600-password domain, invalid inputs, AddressSanitizer and UndefinedBehaviorSanitizer. Task 04 was then rerun with separate X and Y maps: all {task4_test_groups} updated groups passed, including complete comparisons of three maps for each of {task4_png_count} PNG inputs. Raw logs and separate initial and updated validation manifests are saved under evidence/validation. Task 04 figures and timings below use the four-view version.')
 
@@ -309,7 +340,7 @@ heading=doc.add_heading('Evidence and submission',1)
 heading.paragraph_format.page_break_before=True
 doc.add_paragraph('The evidence directory contains validation logs and four separate browser screen recordings named Task_01.mp4 to Task_04.mp4. Each recording captures the live Colab view while the corresponding program is rerun and its output is displayed. CUDA computation runs on Colab\'s GPU. The recordings capture the browser viewport at a reduced frame rate, with the original elapsed time preserved. Output files are saved beside each task source.')
 doc.add_paragraph('The task sections contain actual Google Colab screenshots of the implementation code and its visible results. Each code excerpt has an explanation of the work I implemented, followed by its source location. Tasks 01 to 03 use output captures from their verified executions. Task 04 shows its current single-image execution and the four views of download.png. The screenshots accompany the saved outputs and validation logs; a partial output preview alone does not establish that every test passed.')
-doc.add_paragraph('Each task is packaged separately with its C or CUDA source, notebook and resources. A complete portfolio archive also contains this report, the viva guide and all four task folders. Video evidence is kept locally in the evidence directory; large recording files are excluded from Git history.')
+doc.add_paragraph('Each task is packaged separately with its C or CUDA source, notebook and resources. A complete portfolio archive also contains this report and all four task folders. Video evidence is kept locally in the evidence directory; large recording files are excluded from Git history.')
 doc.add_heading('References',1)
 for text in [
     'University of Wolverhampton (2025/26). 6CS005 Assessment 25-26. Supplied assignment brief.',

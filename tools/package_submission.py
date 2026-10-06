@@ -102,7 +102,6 @@ for number in range(1, 5):
          Path('Evidence/Report') / f'Task_{number:02d}_Code_Colab.jpg')
 
 copy(PROJECT / REPORT, Path('Evidence/Report') / REPORT)
-copy(PROJECT / 'Viva_Guide.md', Path('Evidence/Report/Viva_Guide.md'))
 copy(PROJECT / 'colab_links.json', Path('Evidence/Notebooks/colab_links.json'))
 copy(PROJECT / 'evidence/recordings.json', Path('Evidence/Videos/recordings.json'))
 copy(PROJECT / 'evidence/Task_04_Four_Views_Colab.jpg',
@@ -124,7 +123,7 @@ write(Path('README.txt'), '''High Performance Computing submission
 Thaslim Mohammed Sahl | Student number 2638120 | 6CS005
 
 Evidence/Notebooks contains Task1.ipynb to Task4.ipynb.
-Evidence/Report contains the Word report, separate task answers, viva guide,
+Evidence/Report contains the Word report, separate task answers,
 actual Colab screenshots and validation records.
 Evidence/Videos contains one real Colab execution recording for each task.
 Task1 to Task4 contain the separate C/CUDA programs, inputs and saved outputs.
@@ -138,9 +137,13 @@ used in the report and saved Colab notebooks. lodepng.cpp is kept as the C++
 codec source compiled by nvcc, with its original licence and header.
 
 Open a notebook in Google Colab, select Python 3 and T4 GPU, then Run all.
-Its setup reconstructs the tested runtime folders from online resources or
-checksum-verified bundled copies. No private Google Drive mount is needed.
-Task 4 downloads the one public image listed in Task4/public_images.json.
+When the first cell asks for files, upload these from the matching task folder:
+Task1: WordOccurrenceDataset.txt
+Task2: MatData.txt
+Task3: passwords.txt and expected_passwords.txt
+Task4: lodepng.cpp and lodepng.h
+The notebooks contain code cells for setup, source, compilation and output.
+Task 4 downloads download.png from the lecturer's public image URL.
 The existing Colab links are in the Word report and colab_links.json.
 
 Task 4 demonstrates one public input, download.png, with these output prefixes:

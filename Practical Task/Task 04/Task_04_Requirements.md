@@ -52,11 +52,10 @@ The brief does not prescribe fixed Task 04 filenames. The existing
 For `download.png`, the saved files are `outImg_download.png`,
 `outImg_Gx_download.png` and `outImg_Gy_download.png`.
 
-The assessed calculations use C and CUDA. Python downloads the single public
-demonstration image, displays its four views and performs independent checks.
-The notebook's input resource copy contains only `download.png`. Its
-`/content/HPC_Task_04_OneImage` runtime folder keeps older multi-image resources
-separate. The validation cell creates thirteen temporary fixtures, giving
+The assessed calculations use C and CUDA. The first notebook cell uploads
+`lodepng.cpp` and `lodepng.h` and downloads the single public demonstration
+image. Python displays its four views. The notebook uses `/content/Task_04`.
+The separate development validation creates thirteen temporary fixtures, giving
 fourteen input checks and forty-two output-map checks together with the public
 input. Those fixtures are separate from the normal demonstration. Python does not
 replace the CUDA convolution with an image-processing library.

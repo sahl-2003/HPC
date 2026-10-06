@@ -2,7 +2,7 @@
 
 Thaslim Mohammed Sahl | 2638120 | 6CS005
 
-[Open task notebook in Colab](https://colab.research.google.com/github/sahl-2003/HPC/blob/main/Practical%20Task/Task%2001/Task_01.ipynb)
+[Open task notebook in Colab](https://colab.research.google.com/drive/17fYWnnA4bQEIOrRJl5N6sbBfPTEnoz9i)
 
 [Executed Colab notebook](https://colab.research.google.com/drive/17fYWnnA4bQEIOrRJl5N6sbBfPTEnoz9i)
 
@@ -41,7 +41,7 @@ The supplied WordOccurrenceDataset.txt produced 120,000 words and 94 unique word
 
 Boundary tests covered a 20,000-character word, CRLF, tabs, punctuation, digits, no final newline, and non-divisible workloads. An empty file produced a valid header with no word rows. Zero, negative, non-numeric, and out-of-range thread counts, missing files, and missing arguments returned errors.
 
-AddressSanitizer and UndefinedBehaviorSanitizer passed on the supplied dataset with seven threads. Thread IDs and per-thread slice counts are printed for the viva; their distribution can vary with scheduling without changing the final frequencies.
+AddressSanitizer and UndefinedBehaviorSanitizer passed on the supplied dataset with seven threads. The program prints thread IDs and per-thread slice counts; their distribution can vary with scheduling without changing the final frequencies.
 
 
 ## Colab execution evidence

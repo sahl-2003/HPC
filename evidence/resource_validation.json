@@ -1,16 +1,19 @@
 {
   "status": "PASS",
-  "checked_resources": 15,
   "notebooks": [
     "Task_01.ipynb",
     "Task_02.ipynb",
     "Task_03.ipynb",
     "Task_04.ipynb"
   ],
+  "checked_resources": 6,
   "checks": [
-    "Git-stored resource checksums equal notebook manifests",
-    "Bundled copies equal manifest checksums",
-    "Notebook C and CUDA source cells equal separate source files",
+    "Five executable code cells in each task notebook",
+    "Short Colab file uploads with supplied resource filenames",
+    "C/CUDA tokens match the separate sources after comment removal",
+    "Notebook cells contain executable task code only",
+    "Python setup and display cells parse successfully",
+    "Development validation uses a project ZIP upload",
     "Each notebook requests a T4 GPU runtime"
   ]
 }
