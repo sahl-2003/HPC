@@ -105,3 +105,12 @@ notebook links, algorithms, memory handling, tests and timing observations.
 For submission, use the four separate Task ZIP archives as required by the
 brief. The full portfolio ZIP is a backup of the report, tasks, viva guide and
 evidence. Archives are local deliverables and are excluded from Git history.
+
+The requested submission layout is produced by `tools/package_submission.py`.
+It creates `HPC_Submission` beside this project, with `Evidence/Notebooks`,
+`Evidence/Report`, `Evidence/Videos` and `Task1` to `Task4`. The four notebooks
+are named `Task1.ipynb` to `Task4.ipynb`. Verified source and output filenames
+are retained, and Task 4 inputs and output PNGs are placed beside its CUDA
+source. The complete `HPC_Submission.zip` and four separate
+`2638120_Task1.zip` to `2638120_Task4.zip` archives are created beside it.
+Every copy and archived file is checked against its SHA-256 checksum.
