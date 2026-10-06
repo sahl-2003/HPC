@@ -125,9 +125,13 @@ ROOT = verifier.parent.parent
     cells = [cell(setup, 'validation_setup'),
              cell("p = subprocess.run([sys.executable, str(verifier)], text=True, capture_output=True)\nprint(p.stdout)\nprint(p.stderr)\nassert p.returncode == 0, 'Validation failed.'", 'validation_run'),
              cell("shutil.make_archive('/content/HPC_run_results', 'zip', ROOT)\nfiles.download('/content/HPC_run_results.zip')", 'validation_download')]
-    path = WORKSPACE / 'working' / 'HPC_Validation.ipynb'
+    path = ROOT / 'tools' / 'HPC_Validation.ipynb'
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(notebook(cells), indent=1), encoding='utf-8')
+    contents = json.dumps(notebook(cells), indent=1)
+    path.write_text(contents, encoding='utf-8')
+    working = WORKSPACE / 'working' / 'HPC_Validation.ipynb'
+    working.parent.mkdir(parents=True, exist_ok=True)
+    working.write_text(contents, encoding='utf-8')
     return path
 
 

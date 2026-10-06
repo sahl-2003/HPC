@@ -162,7 +162,10 @@ Task3: nvcc -O2 -arch=sm_75 PWCrack.cu -o PWCrack
 Task4: nvcc -O2 -arch=sm_75 lodepng.cpp SobelEdge.cu -o SobelEdge
        ./SobelEdge . download.png
 
-The GitHub repository remains private. This package does not change sharing.
+The GitHub project is public: https://github.com/sahl-2003/HPC
+The four Colab notebooks allow anyone with the link to view and make a copy.
+Public downloads include the full submission, task ZIPs, report and recordings:
+https://github.com/sahl-2003/HPC/releases/latest
 ''')
 
 if UPDATE:

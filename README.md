@@ -50,8 +50,16 @@ Executed notebooks saved in Colab:
 - [Task 03 password recovery](https://colab.research.google.com/drive/1MpOg0Lu-xRw5LR4jO0s7i9EdtIcUu-lQ)
 - [Task 04 Sobel edges](https://colab.research.google.com/drive/1N2NxvodTA4TeiNAUY0JtYP0_kALg1uOE)
 
-Sharing permissions remain as they were. The student can approve final access
-when the private development version is ready to share.
+All four notebooks allow anyone with the link to view the code. To run a
+notebook, open it in Colab and save a copy to your own Drive. The GitHub project
+is public and includes the sources, inputs, output files and report.
+
+## Assignment downloads
+
+[Download the complete submission, task ZIPs, report and recordings](https://github.com/sahl-2003/HPC/releases/latest).
+The complete submission includes all four task folders, notebooks, input
+resources, output files, the Word report and four execution recordings.
+Individual task ZIPs and recordings are also available on the same page.
 
 ## Running a task
 
@@ -93,11 +101,13 @@ contains the initial full T4 validation logs and its 23-group PASS manifest.
 The saved Task 04 validation records cover fourteen inputs and forty-two
 output PNGs, including direction ramps, grayscale rounding and the 6-8-10
 example. Full regression checks remain in tools/verify.py and can be run
-with the separate development validation notebook.
+with [the development validation notebook](https://colab.research.google.com/github/sahl-2003/HPC/blob/main/tools/HPC_Validation.ipynb).
+Upload the complete portfolio ZIP from the downloads page when running it;
+that archive includes tools/verify.py and the original project folder layout.
 The local `evidence` directory also contains one MP4 browser recording per task. Those
 recordings capture the live Colab viewport while the program is rerun and its
 output is displayed, preserving elapsed time at a reduced frame rate.
-Videos are excluded from Git history and included in local archives.
+Videos are excluded from Git history and available in the public downloads.
 
 Each task has a separate `Task_01_Report.md` to `Task_04_Report.md` answer.
 The combined Word report includes the actual executed Colab links, source
@@ -105,7 +115,7 @@ notebook links, algorithms, memory handling, tests and timing observations.
 
 For submission, use the four separate Task ZIP archives as required by the
 brief. The full portfolio ZIP is a backup of the report, tasks and
-evidence. Archives are local deliverables and are excluded from Git history.
+evidence. Archives are available in the public downloads and excluded from Git history.
 
 The requested submission layout is produced by `tools/package_submission.py`.
 It creates `HPC_Submission` beside this project, with `Evidence/Notebooks`,

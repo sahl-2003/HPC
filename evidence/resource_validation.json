@@ -13,7 +13,7 @@
     "C/CUDA tokens match the separate sources after comment removal",
     "Notebook cells contain executable task code only",
     "Python setup and display cells parse successfully",
-    "Development validation uses a project ZIP upload",
+    "Published repository validation helper uses a project ZIP upload",
     "Each notebook requests a T4 GPU runtime"
   ]
 }

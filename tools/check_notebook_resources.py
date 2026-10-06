@@ -58,16 +58,20 @@ for number in range(1, 5):
     checked.append(path.name)
     print(f'PASS: {path.name}, five code cells, short uploads, unchanged algorithm tokens')
 
-validation = ROOT.parent / 'working' / 'HPC_Validation.ipynb'
+validation = ROOT / 'tools' / 'HPC_Validation.ipynb'
 content = json.loads(validation.read_text(encoding='utf-8'))
 assert len(content['cells']) == 3
+assert len({cell['id'] for cell in content['cells']}) == 3
 for cell in content['cells']:
     assert cell['cell_type'] == 'code'
     source = ''.join(cell['source'])
     ast.parse(source)
     assert 'base64' not in source and 'viva' not in source.lower()
 assert 'files.upload()' in ''.join(content['cells'][0]['source'])
-print('PASS: development validation uses a project ZIP upload and three code cells')
+working_validation = ROOT.parent / 'working' / 'HPC_Validation.ipynb'
+if working_validation.exists():
+    assert validation.read_bytes() == working_validation.read_bytes()
+print('PASS: repository validation helper uses a project ZIP upload and three code cells')
 
 result = {'status': 'PASS', 'notebooks': checked,
           'checked_resources': sum(len(names) for names in UPLOADS.values()),
@@ -76,7 +80,7 @@ result = {'status': 'PASS', 'notebooks': checked,
                      'C/CUDA tokens match the separate sources after comment removal',
                      'Notebook cells contain executable task code only',
                      'Python setup and display cells parse successfully',
-                     'Development validation uses a project ZIP upload',
+                     'Published repository validation helper uses a project ZIP upload',
                      'Each notebook requests a T4 GPU runtime']}
 output = ROOT / 'evidence' / 'resource_validation.json'
 output.parent.mkdir(parents=True, exist_ok=True)
