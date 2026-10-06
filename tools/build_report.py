@@ -267,7 +267,7 @@ doc.core_properties.title='High Performance Computing portfolio'
 doc.core_properties.author='Thaslim Mohammed Sahl'
 doc.add_paragraph('High Performance Computing portfolio','Title')
 doc.add_paragraph('6CS005 2025/26 assessment')
-doc.add_paragraph('Thaslim Mohammed Sahl\nStudent number 2638120\n6 October 2026')
+doc.add_paragraph('Thaslim Mohammed Sahl\nStudent number 2638120\n7 October 2026')
 doc.add_paragraph('This portfolio implements the four tasks in the current assessment brief using Pthreads, OpenMP and CUDA. Each task has a separate source file, Colab notebook and output resources. Correctness is checked against independent reference calculations and invalid-input tests, with actual execution evidence from a Python 3 Colab runtime using a Tesla T4 GPU.')
 table_of_contents(doc)
 doc.add_heading('Execution and files',1)
@@ -275,7 +275,7 @@ doc.add_paragraph('The programs use the file-handling, dynamic allocation, threa
 doc.add_paragraph('Task folders follow the Practical Task and Task 01 to Task 04 organisation. Output names used here are result.txt for word counts, results.txt for matrices, decrypted.txt for passwords, and outImg_ prefixed PNGs for edges. Task 04 adds outImg_Gx_ and outImg_Gy_ PNGs so all four illustrated views can be shown. No input resource requires mounting a private Google Drive folder.')
 link(doc,'GitHub project','https://github.com/sahl-2003/HPC')
 link(doc,'Download complete assignment and recordings','https://github.com/sahl-2003/HPC/releases/latest')
-doc.add_paragraph('Open a task notebook in Google Colab and upload the files requested by its first cell: Task 01, WordOccurrenceDataset.txt; Task 02, MatData.txt; Task 03, passwords.txt and expected_passwords.txt; Task 04, lodepng.cpp and lodepng.h. Task 04 downloads download.png from its public URL. Run all cells to compile the program and display the output. Use a T4 GPU for the CUDA tasks. All four notebook links allow anyone with the link to view and copy the code. The GitHub project contains the source and resources.')
+doc.add_paragraph('All four Colab notebooks are shared as Viewer with anyone who has the link. Save a copy in your own Google Drive to run the cells. Upload the files requested by the first cell: Task 01, WordOccurrenceDataset.txt; Task 02, MatData.txt; Task 03, passwords.txt and expected_passwords.txt; Task 04, lodepng.cpp and lodepng.h. Task 04 downloads download.png from its public URL. Run all cells to compile the program and display the output. Select a T4 GPU for the CUDA tasks. The public GitHub download page contains the input files, source code, saved outputs and recordings.')
 doc.add_heading('Validation result',1)
 doc.add_paragraph(f'All 23 initial test groups passed on the Tesla T4, including multiple CPU thread counts, all supplied matrix pairs, exhaustive recovery of the 67,600-password domain, invalid inputs, AddressSanitizer and UndefinedBehaviorSanitizer. Task 04 was then rerun with separate X and Y maps: all {task4_test_groups} updated groups passed, including complete comparisons of three maps for each of {task4_png_count} PNG inputs. Raw logs and separate initial and updated validation manifests are saved under evidence/validation. Task 04 figures and timings below use the four-view version.')
 
@@ -341,14 +341,14 @@ heading=doc.add_heading('Evidence and submission',1)
 heading.paragraph_format.page_break_before=True
 doc.add_paragraph('The evidence directory contains validation logs and four separate browser screen recordings named Task_01.mp4 to Task_04.mp4. Each recording captures the live Colab view while the corresponding program is rerun and its output is displayed. CUDA computation runs on Colab\'s GPU. The recordings capture the browser viewport at a reduced frame rate, with the original elapsed time preserved. Output files are saved beside each task source.')
 doc.add_paragraph('The task sections contain actual Google Colab screenshots of the implementation code and its visible results. Each code excerpt has an explanation of the work I implemented, followed by its source location. Tasks 01 to 03 use output captures from their verified executions. Task 04 shows its current single-image execution and the four views of download.png. The screenshots accompany the saved outputs and validation logs; a partial output preview alone does not establish that every test passed.')
-doc.add_paragraph('Each task is packaged separately with its C or CUDA source, notebook and resources. A complete portfolio archive also contains this report and all four task folders. Video evidence is kept locally in the evidence directory; large recording files are excluded from Git history.')
+doc.add_paragraph('Each task is packaged separately with its C or CUDA source, notebook and resources. The public GitHub download page provides this Word report, the complete submission archive, the four task archives and all four execution recordings. Anyone with the link can download these files without requesting access.')
 doc.add_heading('References',1)
 for text in [
     'University of Wolverhampton (2025/26). 6CS005 Assessment 25-26. Supplied assignment brief.',
     '6CS005 teaching materials. Weeks 1 and 2: multithreading, Pthreads, mutexes and joining threads. Supplied lectures and workshops.',
     '6CS005 teaching materials. Weeks 3 and 4: C file handling, OpenMP parallel loops, shared and private values, and matrix operations. Supplied lectures and workshops.',
     '6CS005 teaching materials. Weeks 6 to 9: CUDA grids, thread indices, GPU memory, file input and PNG processing. Supplied lectures, workshops and source examples.',
-    'Lecturer source collection. code sir.txt; CryptForCuda.c; PasswordGeneratorToText.c; OMPMatSumFromFile.c.txt; Negative.cu; last-class SobelEdge.cu PNG/grayscale example supplied as pasted text. Supplied teaching examples.',
+    'Lecturer source collection. code sir.txt; CryptForCuda.c; PasswordGeneratorToText.c; OMPMatSumFromFile.c.txt; Negative.cu; last-class SobelEdge.cu PNG/grayscale example. Supplied teaching examples.',
     'Dissanayake, K. Portfolio reference. Consulted for folder organisation and report layout. The earlier tasks differ from the current brief.',
     'Vandevenne, L. (2018). LodePNG version 20180910. Unmodified PNG codec supplied in the reference resources; original licence retained.'
 ]: doc.add_paragraph(text)
