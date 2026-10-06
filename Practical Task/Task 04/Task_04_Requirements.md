@@ -10,9 +10,10 @@ Its final illustration shows four views of one input image:
 3. Gradient in Y direction
 4. Sobel Edge Detection
 
-It does not set an exact count of four input PNGs. This project processes three
-public demonstration images in one invocation and displays these four views for
-every image. The command accepts more PNGs when needed.
+It does not set an exact count of four input PNGs. The normal demonstration
+processes only the lecturer's `download.png` input and displays these four
+views. The command still accepts multiple PNGs as required by the task, and the
+separate regression cell checks batch processing with small temporary fixtures.
 
 The written description defines Gx as intensity changes from left to right and
 Gy as changes from top to bottom. The implementation follows those definitions:
@@ -51,6 +52,11 @@ The brief does not prescribe fixed Task 04 filenames. The existing
 For `download.png`, the saved files are `outImg_download.png`,
 `outImg_Gx_download.png` and `outImg_Gy_download.png`.
 
-The assessed calculations use C and CUDA. Python downloads the public input
-files, displays the four views and performs independent checks. It does not
+The assessed calculations use C and CUDA. Python downloads the single public
+demonstration image, displays its four views and performs independent checks.
+The notebook's input resource copy contains only `download.png`. Its
+`/content/HPC_Task_04_OneImage` runtime folder keeps older multi-image resources
+separate. The validation cell creates thirteen temporary fixtures, giving
+fourteen input checks and forty-two output-map checks together with the public
+input. Those fixtures are separate from the normal demonstration. Python does not
 replace the CUDA convolution with an image-processing library.

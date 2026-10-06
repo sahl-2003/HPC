@@ -26,10 +26,10 @@
   {
     "task": 4,
     "file": "Task_04.mp4",
-    "captured_frames": 110,
-    "capture": "Genuine live Colab browser captures during CUDA execution, fullscreen four-view results for three public PNGs, and passing independent checks",
+    "captured_frames": 30,
+    "capture": "Genuine Colab UI screenshot sequence captured during one-image T4 execution, output display and validation",
     "timing": "Original elapsed intervals retained; variable frame rate",
     "decoded_without_errors": true,
-    "revision": "Four views per public PNG: original, Gx, Gy and Sobel magnitude"
+    "revision": "One public input download.png: original, Gx, Gy and Sobel magnitude"
   }
 ]

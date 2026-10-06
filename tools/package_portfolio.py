@@ -9,6 +9,16 @@ def files_under(folder):
     for path in sorted(folder.rglob('*')):
         if path.is_file() and '.git' not in path.parts and '__pycache__' not in path.parts:
             if path.suffix not in ('.zip', '.pyc'):
+                relative = path.relative_to(ROOT)
+                if relative.parts[0] == 'evidence' and path.name.startswith('figure_'):
+                    continue  # The report now uses screenshots from the actual Colab run.
+                if relative.parts[:2] == ('Practical Task', 'Task 04'):
+                    if path.suffix == '.png' and path.name not in {
+                            'download.png', 'outImg_download.png',
+                            'outImg_Gx_download.png', 'outImg_Gy_download.png'}:
+                        continue
+                    if path.name == 'OpenCV_LICENSE.txt':
+                        continue
                 yield path
 
 def package(destination, files):
@@ -24,6 +34,9 @@ for number in range(1, 5):
     files = list(files_under(folder))
     files += [ROOT / 'tools' / 'verify.py', ROOT / 'README.md', ROOT / 'colab_links.json']
     files += [ROOT / 'evidence' / f'Task_{number:02d}.mp4', ROOT / 'evidence' / f'Task_{number:02d}_Colab.jpg']
+    if number == 4:
+        files.append(ROOT / 'evidence/Task_04_Four_Views_Colab.jpg')
+        files.append(ROOT / 'evidence/Task_04_Validation_Colab.jpg')
     files += list((ROOT / 'evidence' / 'validation').glob(f'task{number}_*'))
     package(ROOT / f'Task_{number:02d}.zip', files)
 

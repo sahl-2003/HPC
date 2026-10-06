@@ -1,24 +1,10 @@
 GPU: Tesla T4
 
 images/download.png: 300x300; 352 x blocks; 256 threads/block
-CPU compute: 3.001 ms; CUDA kernel: 0.127 ms; CUDA transfers + kernel: 0.613 ms
+CPU compute: 3.217 ms; CUDA kernel: 0.143 ms; CUDA transfers + kernel: 1.950 ms
 Gx, Gy and all final RGBA bytes match CPU reference: PASS
 Gradient in X: outputs/outImg_Gx_download.png
 Gradient in Y: outputs/outImg_Gy_download.png
 Output: outputs/outImg_download.png
 
-images/smarties.png: 413x356; 575 x blocks; 256 threads/block
-CPU compute: 4.657 ms; CUDA kernel: 0.021 ms; CUDA transfers + kernel: 0.461 ms
-Gx, Gy and all final RGBA bytes match CPU reference: PASS
-Gradient in X: outputs/outImg_Gx_smarties.png
-Gradient in Y: outputs/outImg_Gy_smarties.png
-Output: outputs/outImg_smarties.png
-
-images/sudoku.png: 558x563; 1228 x blocks; 256 threads/block
-CPU compute: 10.375 ms; CUDA kernel: 0.034 ms; CUDA transfers + kernel: 1.139 ms
-Gx, Gy and all final RGBA bytes match CPU reference: PASS
-Gradient in X: outputs/outImg_Gx_sudoku.png
-Gradient in Y: outputs/outImg_Gy_sudoku.png
-Output: outputs/outImg_sudoku.png
-
-Successfully processed 3/3 PNG images.
+Successfully processed 1/1 PNG images.

@@ -38,6 +38,12 @@ An exhaustive independent test generated all 67,600 possible raw passwords, chec
 Empty files, short lines, long lines, uppercase characters, invalid digits and blank lines were rejected. The valid-shaped string aaaaaa0000 had no candidate and correctly produced NOT_FOUND. The recorded kernel time for 10,000 records was 0.303 ms on the Tesla T4; file reads, allocation, transfers and output writes are excluded from that event timing.
 
 
+## Colab execution evidence
+
+![Figure 3. Task 03 CUDA password recovery in Google Colab.](../../evidence/Task_03_Colab.jpg)
+
+The program summary reports 10,000 recovered and verified passwords out of 10,000 and identifies decrypted.txt. The display cell shows encrypted records beside their recovered two-letter, two-digit plaintext values. The T4 runtime is visible in the Colab status bar. The full-domain and invalid-input tests described above provide checks beyond these displayed examples.
+
 ## Performance and limits
 
 This is the assessment's synthetic character transformation, not an attack on a real authentication service. Candidate filtering is valid because encrypted positions 0..5 depend only on the two letters. Without this property, the same pruning would not be valid.

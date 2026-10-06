@@ -67,9 +67,10 @@ The tests establish the results; you still need to explain why the code obtains 
 - The lecturer's last-class example converts RGB to grayscale. This assignment
   extends that example by calculating the complete 3x3 Sobel convolution.
   Explain where the grayscale sample enters the Gx and Gy sums.
-- The four notebook views are the original image, the X gradient, the Y
-  gradient and the combined Sobel magnitude. The program repeats these views
-  for each input PNG.
+- The normal notebook demonstration uses one image, `download.png`. Its four
+  views are the original image, the X gradient, the Y gradient and the combined
+  Sobel magnitude. The CUDA command can still accept several PNGs; the separate
+  regression tests check this batch capability.
 - Gx measures left-right intensity changes, so it emphasises vertical edges.
   Gy measures top-bottom changes, so it emphasises horizontal edges. These are
   directions of intensity change, not the orientation of the visible edge.
@@ -106,11 +107,16 @@ The tests establish the results; you still need to explain why the code obtains 
 - `%%writefile` saves the separate CUDA source. Direct `nvcc` compilation links
   it with `lodepng.cpp`; the `nvcc4jupyter` extension is optional for this file
   compilation workflow.
-- The notebook downloads `download.png`, `smarties.png` and `sudoku.png` from
-  public URLs with `wget`, so their sources can be accessed without this
-  repository's login. SHA-256 and PNG dimensions are verified before use.
+- The notebook downloads only `download.png` from the lecturer's public URL
+  with `wget`, so its source can be accessed without this repository's login.
+  SHA-256 and PNG dimensions are verified before use.
   `image_downloads.json` records a public download or a reported bundled-copy
   fallback if the host is unavailable or its bytes have changed.
+- The normal demonstration has one input. The independent validation cell
+  creates thirteen small temporary fixtures for boundaries, colour rounding,
+  alpha, both gradient directions and the 6-8-10 example. Its batch checks are
+  separate from the four-view demonstration. The isolated runtime folder keeps
+  earlier multi-image resources out of that run.
 - Explain kernel time, transfer-plus-kernel time, and total application time.
   A kernel speedup cannot be used as an end-to-end speedup.
 - Compare a single pixel and a large image. GPU startup and transfer costs

@@ -36,6 +36,12 @@ Boundary tests covered a 20,000-character word, CRLF, tabs, punctuation, digits,
 AddressSanitizer and UndefinedBehaviorSanitizer passed on the supplied dataset with seven threads. Thread IDs and per-thread slice counts are printed for the viva; their distribution can vary with scheduling without changing the final frequencies.
 
 
+## Colab execution evidence
+
+![Figure 1. Task 01 word occurrence results in Google Colab.](../../evidence/Task_01_Colab.jpg)
+
+The captured program summary shows four requested and four actual Pthreads, 120,000 total words and 94 unique words. It names result.txt as the output file. The next cell displays part of the word-frequency file. These visible results document the supplied dataset run; the independent checks described above also test thread counts and boundary cases.
+
 ## Performance and limits
 
 Counting and merging require memory proportional to the number of occurrences and local unique entries. Sorting takes O(W log W) across the collected words. File loading and the final merge are serial. The word definition is ASCII and does not perform Unicode language segmentation.

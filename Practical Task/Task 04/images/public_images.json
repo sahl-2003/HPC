@@ -5,19 +5,5 @@
     "sha256": "bea2b0c28430f63466123f3db2d5f4b5d1a932aade1727d130bf318a490b6309",
     "dimensions": [300, 300],
     "source": "Image URL supplied in the lecturer's last-class example"
-  },
-  {
-    "filename": "smarties.png",
-    "url": "https://raw.githubusercontent.com/opencv/opencv/53ebe537da128f7b4bafed2b524f21baa092f297/samples/data/smarties.png",
-    "sha256": "ad3f751c053fdcf432687c1bc0e56a61a9119d2bb2ae29365f8aa6534fc77417",
-    "dimensions": [413, 356],
-    "source": "OpenCV samples/data, revision 53ebe537da128f7b4bafed2b524f21baa092f297"
-  },
-  {
-    "filename": "sudoku.png",
-    "url": "https://raw.githubusercontent.com/opencv/opencv/53ebe537da128f7b4bafed2b524f21baa092f297/samples/data/sudoku.png",
-    "sha256": "3cd9ab173f7178c0a16bba9f867062b58b5d60918d5aeb8ced85cba0b24c353a",
-    "dimensions": [558, 563],
-    "source": "OpenCV samples/data, revision 53ebe537da128f7b4bafed2b524f21baa092f297"
   }
 ]

@@ -6,7 +6,7 @@
     {
       "test": "Task 4 full pixel oracle",
       "status": "PASS",
-      "details": "19 inputs and 57 output PNGs; Gx, Gy and final, zero padding, saturation, alpha and non-multiple sizes"
+      "details": "14 inputs and 42 output PNGs; Gx, Gy and final, zero padding, saturation, alpha and non-multiple sizes"
     },
     {
       "test": "Task 4 gradient axes and 6-8-10 example",

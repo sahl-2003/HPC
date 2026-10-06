@@ -17,15 +17,16 @@ first tries the GitHub resource URLs, then uses that copy when the repository
 is private. No Google Drive mount is needed. Public unauthenticated GitHub
 downloads require a later visibility change authorised by the student.
 
-Task 04's demonstration images already have public URLs. Its setup uses `wget`
-to fetch the lecturer's `download.png` image and the OpenCV samples
-`smarties.png` and `sudoku.png`, even while this repository is private. The
-OpenCV URLs are pinned to a specific revision. Checksums and PNG dimensions
-are checked before processing. If a host is unavailable or the image changes,
+Task 04's normal demonstration uses only the lecturer's `download.png` image.
+Its setup uses `wget` to fetch the image from its public URL, even while this
+repository is private. Its checksum and PNG dimensions are checked before
+processing. If the host is unavailable or the image changes,
 setup reports that it is using the verified bundled copy.
 `Practical Task/Task 04/images/public_images.json` records the sources and
-checksums; `image_downloads.json` records how each image was loaded during a run.
-See the Task 04 `images/SOURCES.md` for the public image links and attribution.
+checksum; `image_downloads.json` records how the image was loaded during a run.
+See the Task 04 `images/SOURCES.md` for the public image link and attribution.
+The notebook uses `/content/HPC_Task_04_OneImage`, which keeps previous
+multi-image notebook resources separate.
 
 The senior portfolio informed folder organisation only. Its earlier tasks
 differ from this year's assessment. The programs here follow the current brief.
@@ -68,7 +69,7 @@ the CUDA programs. No local CUDA installation is needed for these notebooks.
 Task 04 follows the lecturer's last-class RGBA decoding and `rgbToGray` style.
 Grayscale intensity is `(30*R + 59*G + 11*B)/100`, with integer truncation.
 The complete assignment applies the 3x3 Gx and Gy Sobel kernels with zero
-padding. For each input, the notebook displays four views: the original image,
+padding. For this one input, the notebook displays four views: the original image,
 the X gradient, the Y gradient and the combined Sobel magnitude. Gx measures
 left-right intensity changes, so it emphasises vertical edges; Gy measures
 top-bottom changes, so it emphasises horizontal edges.
@@ -78,7 +79,9 @@ PNGs, using `lodepng_encode_file` with `LCT_GREY` and 8-bit samples as taught in
 class. The displayed gradient intensities are `min(abs(Gx),255)` and
 `min(abs(Gy),255)`. The final `outImg_<basename>` is calculated from the signed,
 unclipped sums as `min(sqrt(Gx*Gx + Gy*Gy),255)` and preserves the input alpha
-channel. Each pixel's CUDA thread writes its own output values.
+channel. Each pixel's CUDA thread writes its own output values. The CUDA command
+still accepts multiple PNGs, and the separate regression tests check batch
+processing as required by the brief.
 `%%writefile` creates `SobelEdge.cu`, which `nvcc` compiles together with
 `lodepng.cpp`. See `Practical Task/Task 04/Task_04_Requirements.md` for the
 question's requirements and their implementation.
@@ -89,9 +92,12 @@ The required output files are saved beside each task source. `evidence/validatio
 contains the initial full T4 validation logs and its 23-group PASS manifest.
 The Task 04 notebook writes a separate `task4_validation.json` after checking
 the X gradient, Y gradient and final magnitude against an independent pixel
-calculation. Inputs include the three public demonstration images, synthetic
-patterns and grayscale rounding cases. Its checks also cover corrupt files and
-invalid paths. The manifest records the result of that run.
+calculation. That separate cell creates thirteen small temporary PNG fixtures,
+including grayscale rounding cases, direction ramps and the 6-8-10 example.
+Together with `download.png`, it checks fourteen inputs and forty-two output
+PNGs. Its checks also cover corrupt files and invalid paths. The manifest
+records the result of that run; these test fixtures are separate from the normal
+one-image demonstration.
 The local `evidence` directory also contains one MP4 browser recording per task. Those
 recordings capture the live Colab viewport while the program is rerun and its
 output is displayed, preserving elapsed time at a reduced frame rate.

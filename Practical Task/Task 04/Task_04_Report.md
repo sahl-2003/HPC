@@ -8,12 +8,12 @@ Thaslim Mohammed Sahl | 2638120 | 6CS005
 
 ## Objective
 
-Process multiple PNG inputs with CUDA and reproduce the brief's four views for each input: Original Image, Gradient in X direction, Gradient in Y direction and Sobel Edge Detection. The four panels illustrate one input; the brief does not specify exactly four different inputs. Save both gradient maps and the combined edge map at the original dimensions.
+Use one public input image, download.png, to demonstrate the brief's four views: Original Image, Gradient in X direction, Gradient in Y direction and Sobel Edge Detection. The four panels are views of the same input. Save both gradient maps and the combined edge map at the original dimensions. The CUDA program also accepts multiple PNG paths when a batch is required.
 
 
 ## Implementation
 
-The notebook uses wget to download download.png (300x300) from the lecturer's public image URL, plus smarties.png (413x356) and sudoku.png (558x563) from pinned public OpenCV sample URLs. SHA-256 and PNG dimensions are checked before use; image_downloads.json records the source and load mode. These images require no private GitHub login or Drive mount. LodePNG decodes each file into an RGBA host array, with its original licence notices retained.
+The notebook uses wget to download download.png (300x300) from the public image URL in the lecturer's last-class code. SHA-256 and PNG dimensions are checked before use; image_downloads.json records the source and load mode. This input requires no private GitHub login or Drive mount. LodePNG decodes the file into an RGBA host array, with its original licence notices retained.
 
 The last-class sample demonstrates PNG decoding, explicit CUDA memory transfers and rgbToGray; its final kernel stops at grayscale conversion. This implementation extends that workflow with the assessed Sobel convolution. Luminance uses the lecturer's 0.30R + 0.59G + 0.11B weights as (30*R + 59*G + 11*B) / 100, rounded down. Integer arithmetic gives identical CPU and GPU truncation. Gx is [-1,0,1; -2,0,2; -1,0,1] and Gy is [-1,-2,-1; 0,0,0; 1,2,1]. Out-of-image neighbours are zero.
 
@@ -33,12 +33,22 @@ Images are processed one at a time. Host image and reference buffers, all four d
 
 ## Results and tests
 
-The revised notebook downloaded all three demonstration PNGs live on the Tesla T4. Every pixel in all three saved maps matched the references across 19 PNG inputs. Fixtures cover zero padding, saturation, final-image transparency, grayscale rounding and padded launches, as well as the public images and original synthetic patterns.
+The revised notebook downloaded its single demonstration image live on the Tesla T4. Every pixel in the X gradient, Y gradient and final edge maps matched the references across 14 PNG test inputs. The public demonstration uses only download.png; additional small generated fixtures check zero padding, saturation, final-image transparency, grayscale rounding and padded launches.
 
 Directional fixtures independently check that a horizontal ramp has zero interior Gy and a vertical ramp has zero interior Gx. Negative gradients remain visible through their absolute values. A constructed 3x3 patch gives Gx=6, Gy=8 and final magnitude 10 at its centre, reproducing the brief's numerical example. Corrupt files, invalid paths, duplicate inputs and cross-output filename collisions are also tested; a batch continues to a valid image after a corrupt one.
 
-The updated 413x356 smarties.png run took 4.657 ms for serial CPU computation, 0.021 ms for the CUDA kernel, and 0.461 ms for transfers plus kernel. These are single-run observations. GPU allocation, PNG decoding and encoding are outside the transfer-and-kernel interval. The first CUDA invocation has additional startup overhead, so timings are not stable benchmark estimates.
+The updated 300x300 download.png run took 3.217 ms for serial CPU computation, 0.143 ms for the CUDA kernel, and 1.950 ms for transfers plus kernel. These are single-run observations. GPU allocation, PNG decoding and encoding are outside the transfer-and-kernel interval. The first CUDA invocation has additional startup overhead, so timings are not stable benchmark estimates.
 
+
+## Colab execution evidence
+
+![Figure 4. Task 04 single-image CUDA execution in Google Colab.](../../evidence/Task_04_Colab.jpg)
+
+This capture records the notebook run for the 300x300 download.png image on the T4 runtime. Its output identifies the X gradient, Y gradient and final edge PNGs. The reference comparison checks these maps against the serial C calculation. The independent NumPy tests check the saved PNG pixels and gradient directions separately.
+
+![Figure 5. Four views of the same download.png input displayed in Google Colab.](../../evidence/Task_04_Four_Views_Colab.jpg)
+
+The upper-left panel is the original colour image. The upper-right panel displays the absolute X gradient, which responds to left-right intensity changes; the lower-left displays the absolute Y gradient, which responds to top-bottom changes. The lower-right panel is the combined Sobel magnitude. Each map is calculated by the CUDA kernel from the same original pixels. Display values are clamped to 255, while the final magnitude uses the signed, unclipped Gx and Gy sums. All four views retain the 300x300 image dimensions.
 
 ## Performance and limits
 
@@ -51,5 +61,5 @@ Converting colour to luminance detects intensity edges. It does not preserve col
 ```sh
 nvcc -O2 -arch=sm_75 lodepng.cpp SobelEdge.cu -o SobelEdge
 mkdir -p outputs
-./SobelEdge outputs images/download.png images/smarties.png images/sudoku.png
+./SobelEdge outputs images/download.png
 ```

@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checked_resources": 21,
+  "checked_resources": 15,
   "notebooks": [
     "Task_01.ipynb",
     "Task_02.ipynb",

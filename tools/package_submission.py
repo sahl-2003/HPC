@@ -4,25 +4,41 @@ import hashlib
 import json
 import shutil
 import zipfile
+import sys
+from datetime import datetime
 
 PROJECT = Path(__file__).resolve().parents[1]
 WORKSPACE = PROJECT.parent
 DESTINATION = WORKSPACE / 'HPC_Submission'
 REPORT = '2638120_Thaslim_Mohammed_Sahl_High_Performance_Computing.docx'
 COPIES = []
+UPDATE = '--update' in sys.argv
+PREVIOUS = {}
+previous_manifest = DESTINATION / 'Evidence/Report/Submission_Validation.json'
+if previous_manifest.exists():
+    PREVIOUS = {entry['file']: entry['sha256']
+                for entry in json.loads(previous_manifest.read_text())['files']}
 
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def copy(source, relative):
+def copy(source, relative, report_links=False):
     target = DESTINATION / relative
     target.parent.mkdir(parents=True, exist_ok=True)
-    if target.exists() and digest(target) != digest(source):
-        raise RuntimeError(f'Refusing to overwrite a different file: {target}')
-    shutil.copy2(source, target)
-    assert digest(source) == digest(target)
+    contents = source.read_bytes()
+    if report_links:
+        contents = contents.replace(b'(../../evidence/', b'(./')
+    expected = hashlib.sha256(contents).hexdigest()
+    if target.exists() and digest(target) != expected:
+        if not UPDATE or PREVIOUS.get(relative.as_posix()) != digest(target):
+            raise RuntimeError(f'Refusing to overwrite an unverified file: {target}')
+    if report_links:
+        target.write_bytes(contents)
+    else:
+        shutil.copy2(source, target)
+    assert expected == digest(target)
     COPIES.append({'file': relative.as_posix(), 'sha256': digest(target)})
 
 
@@ -30,7 +46,8 @@ def write(relative, text):
     target = DESTINATION / relative
     target.parent.mkdir(parents=True, exist_ok=True)
     if target.exists() and target.read_text(encoding='utf-8') != text:
-        raise RuntimeError(f'Refusing to overwrite a different file: {target}')
+        if not UPDATE:
+            raise RuntimeError(f'Refusing to overwrite a different file: {target}')
     target.write_text(text, encoding='utf-8', newline='\n')
 
 
@@ -46,6 +63,16 @@ def archive(destination, paths):
 
 
 DESTINATION.mkdir(parents=True, exist_ok=True)
+if UPDATE and PREVIOUS:
+    for relative, expected in PREVIOUS.items():
+        existing = DESTINATION / relative
+        if existing.exists() and digest(existing) != expected:
+            raise RuntimeError(f'Submission file changed outside the builder: {existing}')
+    backup = WORKSPACE / 'working/submission_backups' / datetime.now().strftime('%Y%m%d_%H%M%S')
+    backup.mkdir(parents=True, exist_ok=False)
+    archive(backup / 'HPC_Submission.zip',
+            [path for path in DESTINATION.rglob('*') if path.is_file()])
+    print(f'Previous submission backed up: {backup}')
 for number in range(1, 5):
     folder = PROJECT / 'Practical Task' / f'Task {number:02d}'
     target = Path(f'Task{number}')
@@ -54,8 +81,14 @@ for number in range(1, 5):
             continue
         if source.suffix in ('.ipynb', '.zip', '.pyc'):
             continue
+        if number == 4 and source.suffix == '.png' and source.name not in {
+                'download.png', 'outImg_download.png',
+                'outImg_Gx_download.png', 'outImg_Gy_download.png'}:
+            continue
+        if number == 4 and source.name == 'OpenCV_LICENSE.txt':
+            continue
         if source.suffix == '.md' and source.name.endswith('_Report.md'):
-            copy(source, Path('Evidence/Report') / source.name)
+            copy(source, Path('Evidence/Report') / source.name, report_links=True)
         else:
             # Inputs and outputs sit beside the source, as in the supplied example.
             copy(source, target / source.name)
@@ -70,6 +103,10 @@ copy(PROJECT / REPORT, Path('Evidence/Report') / REPORT)
 copy(PROJECT / 'Viva_Guide.md', Path('Evidence/Report/Viva_Guide.md'))
 copy(PROJECT / 'colab_links.json', Path('Evidence/Notebooks/colab_links.json'))
 copy(PROJECT / 'evidence/recordings.json', Path('Evidence/Videos/recordings.json'))
+copy(PROJECT / 'evidence/Task_04_Four_Views_Colab.jpg',
+     Path('Evidence/Report/Task_04_Four_Views_Colab.jpg'))
+copy(PROJECT / 'evidence/Task_04_Validation_Colab.jpg',
+     Path('Evidence/Report/Task_04_Validation_Colab.jpg'))
 for source in sorted((PROJECT / 'evidence/validation').glob('*')):
     if source.is_file():
         copy(source, Path('Evidence/Report/Validation') / source.name)
@@ -90,8 +127,10 @@ actual Colab screenshots and validation records.
 Evidence/Videos contains one real Colab execution recording for each task.
 Task1 to Task4 contain the separate C/CUDA programs, inputs and saved outputs.
 
-The source, inputs, outputs, notebooks, report and recordings are copied from
-the verified project without changing their contents. The notebook filenames
+The source, inputs, outputs, notebooks, Word report and recordings are copied
+from the verified project without changing their contents. Screenshot links
+in the separate Markdown task answers point to their new local folder.
+The notebook filenames
 follow the requested submission layout. Source filenames keep the tested names
 used in the report and saved Colab notebooks. lodepng.cpp is kept as the C++
 codec source compiled by nvcc, with its original licence and header.
@@ -99,10 +138,10 @@ codec source compiled by nvcc, with its original licence and header.
 Open a notebook in Google Colab, select Python 3 and T4 GPU, then Run all.
 Its setup reconstructs the tested runtime folders from online resources or
 checksum-verified bundled copies. No private Google Drive mount is needed.
-Task 4 downloads the public images listed in Task4/public_images.json.
+Task 4 downloads the one public image listed in Task4/public_images.json.
 The existing Colab links are in the Word report and colab_links.json.
 
-Task 4 has multiple input PNGs, each with these saved output prefixes:
+Task 4 demonstrates one public input, download.png, with these output prefixes:
 outImg_Gx_ for the X gradient, outImg_Gy_ for the Y gradient, and outImg_ for
 the combined Sobel magnitude. Its notebook shows the four views together.
 The flat Task4 folder is the submission layout; images/ and outputs/ in the
@@ -116,13 +155,25 @@ Task2: gcc -std=c11 -O2 -fopenmp MatrixOperations.c -lm -o MatrixOperations
 Task3: nvcc -O2 -arch=sm_75 PWCrack.cu -o PWCrack
        ./PWCrack passwords.txt
 Task4: nvcc -O2 -arch=sm_75 lodepng.cpp SobelEdge.cu -o SobelEdge
-       ./SobelEdge . download.png smarties.png sudoku.png
+       ./SobelEdge . download.png
 
 The GitHub repository remains private. This package does not change sharing.
 ''')
 
+if UPDATE:
+    current_files = {entry['file'] for entry in COPIES}
+    for relative, expected in PREVIOUS.items():
+        if relative in current_files:
+            continue
+        stale = (DESTINATION / relative).resolve()
+        if not stale.is_relative_to(DESTINATION.resolve()):
+            raise RuntimeError(f'Unsafe stale path: {stale}')
+        if stale.exists():
+            assert digest(stale) == expected
+            stale.unlink()  # The verified previous copy is retained in the backup ZIP.
+
 manifest = {'status': 'PASS', 'copied_files': len(COPIES),
-            'checks': ['Copied bytes match the verified project',
+            'checks': ['Copied bytes match the verified project, with Markdown screenshot paths adapted to this layout',
                        'Four notebooks, four MP4s and the student report exist',
                        'ZIP CRC and every archived file checksum match'],
             'files': sorted(COPIES, key=lambda entry: entry['file'])}
@@ -139,6 +190,9 @@ for number in range(1, 5):
               DESTINATION / 'README.txt']
     paths += [path for path in (DESTINATION / 'Evidence/Report/Validation').glob(f'task{number}_*')
               if path.is_file()]
+    if number == 4:
+        paths.append(DESTINATION / 'Evidence/Report/Task_04_Four_Views_Colab.jpg')
+        paths.append(DESTINATION / 'Evidence/Report/Task_04_Validation_Colab.jpg')
     archive(WORKSPACE / f'2638120_Task{number}.zip', paths)
 
 write(Path('Evidence/Report/Submission_Validation.json'),

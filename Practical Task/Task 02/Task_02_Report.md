@@ -38,6 +38,12 @@ Additional fixtures covered square matrices, rectangular matrix products, pairs 
 AddressSanitizer and UndefinedBehaviorSanitizer passed on the supplied file with 64 requested threads. Pair 1 has two 3x4 matrices: element-wise operations and both transposes are valid, while the matrix product is not. Pair 2 has 4x6 and 6x2 matrices: the product and transposes are valid, while the four element-wise operations are not.
 
 
+## Colab execution evidence
+
+![Figure 2. Task 02 matrix operations in Google Colab.](../../evidence/Task_02_Colab.jpg)
+
+The visible summary reports 50 matrices processed as 25 pairs and names results.txt. The output preview below contains numeric matrix rows and a matrix multiplication heading with its result dimensions. This confirms that the program writes matrix results to the required file. The separate NumPy comparisons verify every applicable operation, including rows that are outside this screenshot.
+
 ## Performance and limits
 
 A matrix product of m x k and k x n requires O(mkn) arithmetic. Element-wise operations and transposes require O(mn). All input matrices remain in host memory until validation and processing finish; result memory is allocated one operation at a time.
