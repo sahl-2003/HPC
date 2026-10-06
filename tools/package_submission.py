@@ -98,6 +98,8 @@ for number in range(1, 5):
          Path('Evidence/Videos') / f'Task_{number:02d}.mp4')
     copy(PROJECT / 'evidence' / f'Task_{number:02d}_Colab.jpg',
          Path('Evidence/Report') / f'Task_{number:02d}_Colab.jpg')
+    copy(PROJECT / 'evidence' / f'Task_{number:02d}_Code_Colab.jpg',
+         Path('Evidence/Report') / f'Task_{number:02d}_Code_Colab.jpg')
 
 copy(PROJECT / REPORT, Path('Evidence/Report') / REPORT)
 copy(PROJECT / 'Viva_Guide.md', Path('Evidence/Report/Viva_Guide.md'))
@@ -186,6 +188,7 @@ for number in range(1, 5):
               DESTINATION / f'Evidence/Videos/Task_{number:02d}.mp4',
               DESTINATION / f'Evidence/Report/Task_{number:02d}_Report.md',
               DESTINATION / f'Evidence/Report/Task_{number:02d}_Colab.jpg',
+              DESTINATION / f'Evidence/Report/Task_{number:02d}_Code_Colab.jpg',
               DESTINATION / 'Evidence/Notebooks/colab_links.json',
               DESTINATION / 'README.txt']
     paths += [path for path in (DESTINATION / 'Evidence/Report/Validation').glob(f'task{number}_*')

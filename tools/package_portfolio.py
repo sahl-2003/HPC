@@ -34,6 +34,7 @@ for number in range(1, 5):
     files = list(files_under(folder))
     files += [ROOT / 'tools' / 'verify.py', ROOT / 'README.md', ROOT / 'colab_links.json']
     files += [ROOT / 'evidence' / f'Task_{number:02d}.mp4', ROOT / 'evidence' / f'Task_{number:02d}_Colab.jpg']
+    files.append(ROOT / 'evidence' / f'Task_{number:02d}_Code_Colab.jpg')
     if number == 4:
         files.append(ROOT / 'evidence/Task_04_Four_Views_Colab.jpg')
         files.append(ROOT / 'evidence/Task_04_Validation_Colab.jpg')

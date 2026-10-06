@@ -21,6 +21,14 @@ One CUDA thread owns one encrypted password. Nested loops generate the 26*26 let
 
 For 10,000 records the launch is 40 x blocks with 256 threads per block. Smaller inputs use a smaller block size and at least two x blocks. Larger inputs derive the number of blocks from the record count and device limit. Each thread writes only its own result and status, so no global success flag or atomic operation is needed.
 
+## Code I implemented
+
+![Figure 5. Colab code for password indexing and candidate search.](../../evidence/Task_03_Code_Colab.jpg)
+
+I implemented a CUDA kernel in which each thread processes one encrypted password. The thread checks its index, uses its own candidate buffers and rejects letter pairs that fail to match the first six encrypted characters before trying digit pairs. A full match is copied to that thread's separate output slot.
+
+Source excerpt: PWCrack.cu, crackPasswords, lines 40 to 64. The full source remains in PWCrack.cu.
+
 
 ## Synchronisation and memory
 
@@ -40,7 +48,7 @@ Empty files, short lines, long lines, uppercase characters, invalid digits and b
 
 ## Colab execution evidence
 
-![Figure 3. Task 03 CUDA password recovery in Google Colab.](../../evidence/Task_03_Colab.jpg)
+![Figure 6. Task 03 CUDA password recovery in Google Colab.](../../evidence/Task_03_Colab.jpg)
 
 The program summary reports 10,000 recovered and verified passwords out of 10,000 and identifies decrypted.txt. The display cell shows encrypted records beside their recovered two-letter, two-digit plaintext values. The T4 runtime is visible in the Colab status bar. The full-domain and invalid-input tests described above provide checks beyond these displayed examples.
 

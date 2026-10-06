@@ -19,6 +19,14 @@ The initial byte slice is file_size / (8 * actual_threads), with a minimum of on
 
 Each worker keeps its own growable occurrence array, sorts it with qsort, and compresses repeated words into local frequencies. Main joins all workers before combining their local counts, sorting the combined entries, and summing equal words. No worker writes the output file.
 
+## Code I implemented
+
+![Figure 1. Colab code for mutex-protected slice allocation in countWords.](../../evidence/Task_01_Code_Colab.jpg)
+
+I implemented dynamic work allocation with Pthreads. Each worker locks the shared cursor only while claiming its next slice, extends the slice to avoid splitting a word, then unlocks it before scanning the text. Word counts are stored in each worker's own collection before the results are merged.
+
+Source excerpt: WordOccurrence.c, countWords, lines 55 to 79. The full source remains in WordOccurrence.c.
+
 
 ## Synchronisation and memory
 
@@ -38,7 +46,7 @@ AddressSanitizer and UndefinedBehaviorSanitizer passed on the supplied dataset w
 
 ## Colab execution evidence
 
-![Figure 1. Task 01 word occurrence results in Google Colab.](../../evidence/Task_01_Colab.jpg)
+![Figure 2. Task 01 word occurrence results in Google Colab.](../../evidence/Task_01_Colab.jpg)
 
 The captured program summary shows four requested and four actual Pthreads, 120,000 total words and 94 unique words. It names result.txt as the output file. The next cell displays part of the word-frequency file. These visible results document the supplied dataset run; the independent checks described above also test thread counts and boundary cases.
 

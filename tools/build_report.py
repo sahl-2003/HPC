@@ -4,6 +4,7 @@ import re
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.style import WD_STYLE_TYPE
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from PIL import Image
@@ -12,6 +13,39 @@ ROOT=Path(__file__).resolve().parents[1]
 TASKS=ROOT/'Practical Task'
 EVIDENCE=ROOT/'evidence'/'validation'
 NAME='2638120_Thaslim_Mohammed_Sahl_High_Performance_Computing'
+FONT='Times New Roman'
+
+def set_font(font,element,size=None):
+    font.name=FONT
+    if size is not None: font.size=Pt(size)
+    properties=element.get_or_add_rPr()
+    fonts=properties.find(qn('w:rFonts'))
+    if fonts is None:
+        fonts=OxmlElement('w:rFonts'); properties.insert(0,fonts)
+    for script in ('ascii','hAnsi','eastAsia','cs'):
+        fonts.set(qn('w:'+script),FONT)
+    for attribute in ('asciiTheme','hAnsiTheme','eastAsiaTheme','cstheme'):
+        fonts.attrib.pop(qn('w:'+attribute),None)
+
+def table_of_contents(doc):
+    doc.add_page_break()
+    doc.add_paragraph('Table of contents','TOC Heading')
+    paragraph=doc.add_paragraph()
+    for kind in ('begin','instruction','separate','end'):
+        run=paragraph.add_run()
+        if kind=='instruction':
+            field=OxmlElement('w:instrText')
+            field.set(qn('xml:space'),'preserve')
+            field.text=' TOC \\o "1-2" \\h \\z \\u '
+        else:
+            field=OxmlElement('w:fldChar')
+            field.set(qn('w:fldCharType'),kind)
+            if kind=='begin': field.set(qn('w:dirty'),'true')
+        run._r.append(field)
+    settings=doc.settings.element
+    update=OxmlElement('w:updateFields'); update.set(qn('w:val'),'true')
+    settings.append(update)
+    doc.add_page_break()
 
 def link(doc,text,url):
     p=doc.add_paragraph()
@@ -19,6 +53,10 @@ def link(doc,text,url):
     rid=p.part.relate_to(url,'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink',is_external=True)
     hyperlink.set(qn('r:id'),rid)
     run=OxmlElement('w:r'); properties=OxmlElement('w:rPr')
+    fonts=OxmlElement('w:rFonts')
+    for script in ('ascii','hAnsi','eastAsia','cs'): fonts.set(qn('w:'+script),FONT)
+    properties.append(fonts)
+    size=OxmlElement('w:sz'); size.set(qn('w:val'),'24'); properties.append(size)
     color=OxmlElement('w:color'); color.set(qn('w:val'),'164B6B'); properties.append(color)
     underline=OxmlElement('w:u'); underline.set(qn('w:val'),'single'); properties.append(underline)
     run.append(properties); t=OxmlElement('w:t'); t.text=text; run.append(t)
@@ -29,7 +67,7 @@ def code(doc,text):
     for line in text.splitlines():
         p=doc.add_paragraph(); p.paragraph_format.space_after=Pt(0)
         p.paragraph_format.space_before=Pt(0)
-        run=p.add_run(line); run.font.name='Consolas'; run.font.size=Pt(9)
+        run=p.add_run(line); set_font(run.font,run._element,10)
 
 def section(doc,title,paragraphs):
     doc.add_heading(title,2)
@@ -128,33 +166,70 @@ task_content={
 }
 
 capture_content={
-1:('Figure 1. Task 01 word occurrence results in Google Colab.',
+1:('Figure 2. Task 01 word occurrence results in Google Colab.',
    'The captured program summary shows four requested and four actual Pthreads, 120,000 total words and 94 unique words. It names result.txt as the output file. The next cell displays part of the word-frequency file. These visible results document the supplied dataset run; the independent checks described above also test thread counts and boundary cases.'),
-2:('Figure 2. Task 02 matrix operations in Google Colab.',
+2:('Figure 4. Task 02 matrix operations in Google Colab.',
    'The visible summary reports 50 matrices processed as 25 pairs and names results.txt. The output preview below contains numeric matrix rows and a matrix multiplication heading with its result dimensions. This confirms that the program writes matrix results to the required file. The separate NumPy comparisons verify every applicable operation, including rows that are outside this screenshot.'),
-3:('Figure 3. Task 03 CUDA password recovery in Google Colab.',
+3:('Figure 6. Task 03 CUDA password recovery in Google Colab.',
    'The program summary reports 10,000 recovered and verified passwords out of 10,000 and identifies decrypted.txt. The display cell shows encrypted records beside their recovered two-letter, two-digit plaintext values. The T4 runtime is visible in the Colab status bar. The full-domain and invalid-input tests described above provide checks beyond these displayed examples.'),
-4:('Figure 4. Task 04 single-image CUDA execution in Google Colab.',
+4:('Figure 8. Task 04 single-image CUDA execution in Google Colab.',
    'This capture records the notebook run for the 300x300 download.png image on the T4 runtime. Its output identifies the X gradient, Y gradient and final edge PNGs. The reference comparison checks these maps against the serial C calculation. The independent NumPy tests check the saved PNG pixels and gradient directions separately.')
 }
-four_views_caption='Figure 5. Four views of the same download.png input displayed in Google Colab.'
+four_views_caption='Figure 9. Four views of the same download.png input displayed in Google Colab.'
 four_views_explanation=('The upper-left panel is the original colour image. The upper-right panel displays the absolute X gradient, which responds to left-right intensity changes; the lower-left displays the absolute Y gradient, which responds to top-bottom changes. The lower-right panel is the combined Sobel magnitude. Each map is calculated by the CUDA kernel from the same original pixels. Display values are clamped to 255, while the final magnitude uses the signed, unclipped Gx and Gy sums. All four views retain the 300x300 image dimensions.')
+
+code_content={
+1:{'caption':'Figure 1. Colab code for mutex-protected slice allocation in countWords.',
+   'explanation':'I implemented dynamic work allocation with Pthreads. Each worker locks the shared cursor only while claiming its next slice, extends the slice to avoid splitting a word, then unlocks it before scanning the text. Word counts are stored in each worker\'s own collection before the results are merged.',
+   'source':'WordOccurrence.c, countWords, lines 55 to 79'},
+2:{'caption':'Figure 3. Colab code for parallel matrix rows and local product accumulation.',
+   'explanation':'I implemented the matrix operations inside an OpenMP parallel region. Static scheduling gives different output rows to different threads, with the thread count capped by the number of rows. Each matrix-product cell uses its own local sum, so workers write separate result cells without sharing an accumulator.',
+   'source':'MatrixOperations.c, operation, lines 188 to 210'},
+3:{'caption':'Figure 5. Colab code for password indexing and candidate search.',
+   'explanation':'I implemented a CUDA kernel in which each thread processes one encrypted password. The thread checks its index, uses its own candidate buffers and rejects letter pairs that fail to match the first six encrypted characters before trying digit pairs. A full match is copied to that thread\'s separate output slot.',
+   'source':'PWCrack.cu, crackPasswords, lines 40 to 64'},
+4:{'caption':'Figure 7. Colab code for pixel indexing, Sobel gradients and edge magnitude.',
+   'explanation':'I implemented one CUDA thread per image pixel to calculate the X and Y gradients using the Sobel masks. Neighbours outside the image use zero padding, and the two signed gradient sums are combined with sqrt(Gx*Gx + Gy*Gy). I clamp the separate gradient display maps and the final magnitude to the 8-bit image range.',
+   'source':'SobelEdge.cu, sobelEdge, lines 22 to 46'}
+}
 
 doc=Document()
 for section_ in doc.sections:
-    section_.top_margin=Inches(.8); section_.bottom_margin=Inches(.75)
+    section_.top_margin=Inches(.8); section_.bottom_margin=Inches(.9)
+    section_.footer_distance=Inches(.35)
     section_.left_margin=Inches(.85); section_.right_margin=Inches(.85)
 styles=doc.styles
-styles['Normal'].font.name='Arial'; styles['Normal'].font.size=Pt(11)
+for style in styles:
+    if hasattr(style,'font'): set_font(style.font,style._element)
+for name in ['TOC Heading','TOC 1','TOC 2']:
+    if name not in styles: styles.add_style(name,WD_STYLE_TYPE.PARAGRAPH)
+    set_font(styles[name].font,styles[name]._element)
+styles['Normal'].font.size=Pt(12)
 styles['Normal'].paragraph_format.space_after=Pt(7)
 styles['Normal'].paragraph_format.line_spacing=1.1
-for name in ['Title','Heading 1','Heading 2']:
-    styles[name].font.name='Arial'; styles[name].font.color.rgb=RGBColor(0,0,0)
+for name in ['Title','Subtitle','TOC Heading']+[f'Heading {n}' for n in range(1,10)]:
+    styles[name].font.color.rgb=RGBColor(0,0,0)
 styles['Title'].font.size=Pt(26)
-styles['Heading 1'].font.size=Pt(17)
-styles['Heading 2'].font.size=Pt(12)
-styles['Caption'].font.name='Arial'; styles['Caption'].font.size=Pt(10)
+styles['Heading 1'].font.size=Pt(16)
+styles['Heading 1'].paragraph_format.space_before=Pt(15)
+styles['Heading 1'].paragraph_format.space_after=Pt(8)
+styles['Heading 2'].font.size=Pt(13)
+styles['Heading 2'].paragraph_format.space_before=Pt(12)
+styles['Heading 2'].paragraph_format.space_after=Pt(6)
+styles['Caption'].font.size=Pt(10)
 styles['Caption'].font.color.rgb=RGBColor(0,0,0)
+styles['Caption'].paragraph_format.space_after=Pt(7)
+styles['TOC Heading'].font.size=Pt(18)
+styles['TOC Heading'].font.bold=True
+styles['TOC Heading'].paragraph_format.space_after=Pt(12)
+for name in ['TOC 1','TOC 2']:
+    styles[name].base_style=styles['Normal']
+    styles[name].font.size=Pt(12)
+    styles[name].paragraph_format.line_spacing=1
+    styles[name].paragraph_format.space_after=Pt(0)
+    styles[name].paragraph_format.space_before=Pt(3 if name=='TOC 1' else 0)
+    styles[name].paragraph_format.left_indent=Inches(0 if name=='TOC 1' else .2)
+styles['TOC 1'].font.bold=True
 for border in list(styles.element.iter(qn('w:pBdr'))):
     border.getparent().remove(border)
 doc.core_properties.title='High Performance Computing portfolio'
@@ -163,6 +238,7 @@ doc.add_paragraph('High Performance Computing portfolio','Title')
 doc.add_paragraph('6CS005 2025/26 assessment')
 doc.add_paragraph('Thaslim Mohammed Sahl\nStudent number 2638120\n6 October 2026')
 doc.add_paragraph('This portfolio implements the four tasks in the current assessment brief using Pthreads, OpenMP and CUDA. Each task has a separate source file, Colab notebook and output resources. Correctness is checked against independent reference calculations and invalid-input tests, with actual execution evidence from a Python 3 Colab runtime using a Tesla T4 GPU.')
+table_of_contents(doc)
 doc.add_heading('Execution and files',1)
 doc.add_paragraph('The programs use the file-handling, dynamic allocation, thread structures, mutexes, parallel loops, CUDA index calculation, and explicit host-device transfer patterns from the supplied weeks and code sir.txt. Python performs setup, fixture generation, verification and display. The assessed computations are in C and CUDA; the CUDA sources remain separate .cu files.')
 doc.add_paragraph('Task folders follow the Practical Task and Task 01 to Task 04 organisation. Output names used here are result.txt for word counts, results.txt for matrices, decrypted.txt for passwords, and outImg_ prefixed PNGs for edges. Task 04 adds outImg_Gx_ and outImg_Gy_ PNGs so all four illustrated views can be shown. No input resource requires mounting a private Google Drive folder.')
@@ -172,8 +248,8 @@ doc.add_heading('Validation result',1)
 doc.add_paragraph(f'All 23 initial test groups passed on the Tesla T4, including multiple CPU thread counts, all supplied matrix pairs, exhaustive recovery of the 67,600-password domain, invalid inputs, AddressSanitizer and UndefinedBehaviorSanitizer. Task 04 was then rerun with separate X and Y maps: all {task4_test_groups} updated groups passed, including complete comparisons of three maps for each of {task4_png_count} PNG inputs. Raw logs and separate initial and updated validation manifests are saved under evidence/validation. Task 04 figures and timings below use the four-view version.')
 
 for n,data in task_content.items():
-    doc.add_page_break()
     heading=doc.add_heading(f'Task {n:02d} {data["title"]}',1)
+    heading.paragraph_format.page_break_before=True
     if n==4:
         heading.clear()
         heading.add_run('Task 04\n'+data['title'])
@@ -181,6 +257,11 @@ for n,data in task_content.items():
     if str(n) in links: link(doc,f'Executed Task {n:02d} Colab notebook',links[str(n)])
     section(doc,'Objective',data['objective'])
     section(doc,'Implementation',data['algorithm'])
+    doc.add_heading('Code I implemented',2)
+    snippet=code_content[n]
+    colab_capture(doc,f'Task_{n:02d}_Code_Colab.jpg',snippet['caption'],
+                  snippet['explanation'],max_height=5.2)
+    doc.add_paragraph('Source excerpt: '+snippet['source']+'. The full source remains in '+data['source']+'.')
     section(doc,'Synchronisation and memory',data['correctness'])
     doc.add_heading('Build and run',2); code(doc,data['command'])
     section(doc,'Results and tests',data['tests'])
@@ -191,8 +272,7 @@ for n,data in task_content.items():
         log=(EVIDENCE/'task3_10000_passwords.log').read_text().splitlines()
         code(doc,'\n'.join(log[:9]))
         doc.add_paragraph('Actual CUDA execution excerpt. The full file has 10,000 recovered plaintext lines.')
-    if n==4:
-        section(doc,'Performance and limits',data['limits'])
+    section(doc,'Performance and limits',data['limits'])
     heading=doc.add_heading('Colab execution evidence',2)
     heading.paragraph_format.page_break_before=True
     caption,explanation=capture_content[n]
@@ -202,8 +282,6 @@ for n,data in task_content.items():
         heading.paragraph_format.page_break_before=True
         colab_capture(doc,'Task_04_Four_Views_Colab.jpg',four_views_caption,
                       four_views_explanation,max_height=6.1)
-    if n!=4:
-        section(doc,'Performance and limits',data['limits'])
     # A separate readable task answer is included in its task folder.
     lines=[f'# Task {n:02d} {data["title"]}','', 'Thaslim Mohammed Sahl | 2638120 | 6CS005','',
         f'[Open task notebook in Colab]({git_colab(n)})']
@@ -211,6 +289,11 @@ for n,data in task_content.items():
     for title,key in [('Objective','objective'),('Implementation','algorithm'),('Synchronisation and memory','correctness'),('Results and tests','tests')]:
         lines+=['',f'## {title}','']
         for paragraph in data[key]: lines += [paragraph,'']
+        if key=='algorithm':
+            lines+=['## Code I implemented','',
+                    f'![{code_content[n]["caption"]}](../../evidence/Task_{n:02d}_Code_Colab.jpg)','',
+                    code_content[n]['explanation'],'',
+                    'Source excerpt: '+code_content[n]['source']+'. The full source remains in '+data['source']+'.','']
     lines+=['','## Colab execution evidence','',
             f'![{capture_content[n][0]}](../../evidence/Task_{n:02d}_Colab.jpg)','',
             capture_content[n][1],'']
@@ -222,10 +305,10 @@ for n,data in task_content.items():
     lines+=['## Build and run','','```sh',data['command'],'```']
     (TASKS/f'Task {n:02d}'/f'Task_{n:02d}_Report.md').write_text('\n'.join(lines),encoding='utf-8')
 
-doc.add_page_break()
-doc.add_heading('Evidence and submission',1)
+heading=doc.add_heading('Evidence and submission',1)
+heading.paragraph_format.page_break_before=True
 doc.add_paragraph('The evidence directory contains validation logs and four separate browser screen recordings named Task_01.mp4 to Task_04.mp4. Each recording captures the live Colab view while the corresponding program is rerun and its output is displayed. CUDA computation runs on Colab\'s GPU. The recordings capture the browser viewport at a reduced frame rate, with the original elapsed time preserved. Output files are saved beside each task source.')
-doc.add_paragraph('The task sections contain actual Google Colab screenshots with captions and explanations of their visible results. Tasks 01 to 03 use captures from their verified executions. Task 04 shows its current single-image execution and the four views of download.png. The screenshots accompany the saved outputs and validation logs; a partial output preview alone does not establish that every test passed.')
+doc.add_paragraph('The task sections contain actual Google Colab screenshots of the implementation code and its visible results. Each code excerpt has an explanation of the work I implemented, followed by its source location. Tasks 01 to 03 use output captures from their verified executions. Task 04 shows its current single-image execution and the four views of download.png. The screenshots accompany the saved outputs and validation logs; a partial output preview alone does not establish that every test passed.')
 doc.add_paragraph('Each task is packaged separately with its C or CUDA source, notebook and resources. A complete portfolio archive also contains this report, the viva guide and all four task folders. Video evidence is kept locally in the evidence directory; large recording files are excluded from Git history.')
 doc.add_heading('References',1)
 for text in [
@@ -246,7 +329,23 @@ for paragraph in doc.paragraphs:
         paragraph.paragraph_format.keep_with_next=True
 footer=doc.sections[0].footer.paragraphs[0]
 footer.alignment=WD_ALIGN_PARAGRAPH.RIGHT
-run=footer.add_run(); field=OxmlElement('w:fldSimple'); field.set(qn('w:instr'),'PAGE'); run._r.append(field)
+set_font(styles['Footer'].font,styles['Footer']._element,10)
+for target in (styles['Footer']._element,footer._p):
+    for frame in list(target.iter(qn('w:framePr'))): frame.getparent().remove(frame)
+footer.paragraph_format.left_indent=Inches(0)
+footer.paragraph_format.right_indent=Inches(0)
+footer.paragraph_format.first_line_indent=Inches(0)
+footer.paragraph_format.tab_stops.clear_all()
+footer.paragraph_format.line_spacing=1
+footer.paragraph_format.space_before=Pt(0)
+footer.paragraph_format.space_after=Pt(0)
+styles['Footer'].paragraph_format.left_indent=Inches(0)
+styles['Footer'].paragraph_format.right_indent=Inches(0)
+styles['Footer'].paragraph_format.first_line_indent=Inches(0)
+styles['Footer'].paragraph_format.tab_stops.clear_all()
+field=OxmlElement('w:fldSimple'); field.set(qn('w:instr'),'PAGE')
+run=footer.add_run('1'); set_font(run.font,run._element,10)
+footer._p.remove(run._r); field.append(run._r); footer._p.append(field)
 destination=ROOT/(NAME+'.docx')
 doc.save(destination)
 print(destination)

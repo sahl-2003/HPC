@@ -19,6 +19,14 @@ Matrices use malloc for the row pointer array and each row of doubles, following
 
 For equal shapes the program computes A+B, A-B, A.*B and A./B. A zero divisor produces NaN in that cell. Both transposes are always computed. A*B is computed only when A.cols equals B.rows; its cell is the dot product sum over k. Every unavailable operation gets one clear message and the remaining operations continue.
 
+## Code I implemented
+
+![Figure 3. Colab code for parallel matrix rows and local product accumulation.](../../evidence/Task_02_Code_Colab.jpg)
+
+I implemented the matrix operations inside an OpenMP parallel region. Static scheduling gives different output rows to different threads, with the thread count capped by the number of rows. Each matrix-product cell uses its own local sum, so workers write separate result cells without sharing an accumulator.
+
+Source excerpt: MatrixOperations.c, operation, lines 188 to 210. The full source remains in MatrixOperations.c.
+
 
 ## Synchronisation and memory
 
@@ -40,7 +48,7 @@ AddressSanitizer and UndefinedBehaviorSanitizer passed on the supplied file with
 
 ## Colab execution evidence
 
-![Figure 2. Task 02 matrix operations in Google Colab.](../../evidence/Task_02_Colab.jpg)
+![Figure 4. Task 02 matrix operations in Google Colab.](../../evidence/Task_02_Colab.jpg)
 
 The visible summary reports 50 matrices processed as 25 pairs and names results.txt. The output preview below contains numeric matrix rows and a matrix multiplication heading with its result dimensions. This confirms that the program writes matrix results to the required file. The separate NumPy comparisons verify every applicable operation, including rows that are outside this screenshot.
 

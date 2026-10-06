@@ -21,6 +21,14 @@ Gx measures left-to-right intensity changes and Gy measures top-to-bottom change
 
 RGBA input and final output arrays each use width*height*4 bytes. Each gradient array uses width*height bytes. The x grid has ceil(pixel_count/256) blocks and a guard for padded threads. The command accepts any number of PNGs. Output names are outImg_, outImg_Gx_ and outImg_Gy_ followed by the input basename. The host rejects duplicate or colliding generated names before processing. Gradient encoding uses lodepng_encode_file with LCT_GREY, 8, matching the lecturer's grayscale-buffer workflow.
 
+## Code I implemented
+
+![Figure 7. Colab code for pixel indexing, Sobel gradients and edge magnitude.](../../evidence/Task_04_Code_Colab.jpg)
+
+I implemented one CUDA thread per image pixel to calculate the X and Y gradients using the Sobel masks. Neighbours outside the image use zero padding, and the two signed gradient sums are combined with sqrt(Gx*Gx + Gy*Gy). I clamp the separate gradient display maps and the final magnitude to the 8-bit image range.
+
+Source excerpt: SobelEdge.cu, sobelEdge, lines 22 to 46. The full source remains in SobelEdge.cu.
+
 
 ## Synchronisation and memory
 
@@ -42,11 +50,11 @@ The updated 300x300 download.png run took 3.217 ms for serial CPU computation, 0
 
 ## Colab execution evidence
 
-![Figure 4. Task 04 single-image CUDA execution in Google Colab.](../../evidence/Task_04_Colab.jpg)
+![Figure 8. Task 04 single-image CUDA execution in Google Colab.](../../evidence/Task_04_Colab.jpg)
 
 This capture records the notebook run for the 300x300 download.png image on the T4 runtime. Its output identifies the X gradient, Y gradient and final edge PNGs. The reference comparison checks these maps against the serial C calculation. The independent NumPy tests check the saved PNG pixels and gradient directions separately.
 
-![Figure 5. Four views of the same download.png input displayed in Google Colab.](../../evidence/Task_04_Four_Views_Colab.jpg)
+![Figure 9. Four views of the same download.png input displayed in Google Colab.](../../evidence/Task_04_Four_Views_Colab.jpg)
 
 The upper-left panel is the original colour image. The upper-right panel displays the absolute X gradient, which responds to left-right intensity changes; the lower-left displays the absolute Y gradient, which responds to top-bottom changes. The lower-right panel is the combined Sobel magnitude. Each map is calculated by the CUDA kernel from the same original pixels. Display values are clamped to 255, while the final magnitude uses the signed, unclipped Gx and Gy sums. All four views retain the 300x300 image dimensions.
 
