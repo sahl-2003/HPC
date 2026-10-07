@@ -6,14 +6,16 @@
     "Task_03.ipynb",
     "Task_04.ipynb"
   ],
-  "checked_resources": 6,
+  "resource_commit": "2ae868943d23e75e6a6cf5c2a7420c23cf15872b",
+  "checked_resources": 7,
   "checks": [
     "Five executable code cells in each task notebook",
-    "Short Colab file uploads with supplied resource filenames",
+    "Public pinned GitHub resource URLs with a 30-second timeout",
+    "Automatic downloads create required runtime folders and files",
     "C/CUDA tokens match the separate sources after comment removal",
     "Notebook cells contain executable task code only",
     "Python setup and display cells parse successfully",
-    "Published repository validation helper uses a project ZIP upload",
-    "Each notebook requests a T4 GPU runtime"
+    "Published repository validation helper downloads the pinned source ZIP",
+    "CPU metadata for Tasks 1/2 and T4 GPU metadata for Tasks 3/4"
   ]
 }

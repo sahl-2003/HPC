@@ -52,9 +52,10 @@ The brief does not prescribe fixed Task 04 filenames. The existing
 For `download.png`, the saved files are `outImg_download.png`,
 `outImg_Gx_download.png` and `outImg_Gy_download.png`.
 
-The assessed calculations use C and CUDA. The first notebook cell uploads
-`lodepng.cpp` and `lodepng.h` and downloads the single public demonstration
-image. Python displays its four views. The notebook uses `/content/Task_04`.
+The assessed calculations use C and CUDA. The first notebook cell downloads
+`lodepng.cpp`, `lodepng.h` and the single demonstration image automatically
+from the public GitHub project. Python displays its four views. The notebook
+uses `/content/Task_04` and needs no manual uploads.
 The separate development validation creates thirteen temporary fixtures, giving
 fourteen input checks and forty-two output-map checks together with the public
 input. Those fixtures are separate from the normal demonstration. Python does not

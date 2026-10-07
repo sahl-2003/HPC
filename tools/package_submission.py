@@ -136,14 +136,12 @@ follow the requested submission layout. Source filenames keep the tested names
 used in the report and saved Colab notebooks. lodepng.cpp is kept as the C++
 codec source compiled by nvcc, with its original licence and header.
 
-Open a notebook in Google Colab, select Python 3 and T4 GPU, then Run all.
-When the first cell asks for files, upload these from the matching task folder:
-Task1: WordOccurrenceDataset.txt
-Task2: MatData.txt
-Task3: passwords.txt and expected_passwords.txt
-Task4: lodepng.cpp and lodepng.h
+Open a notebook in Google Colab and select Run all. Tasks 1 and 2 use a CPU
+runtime. Tasks 3 and 4 need a T4 GPU runtime. The first cell downloads the
+required input files and codec sources from the public GitHub project.
+No manual file upload, GitHub sign-in or Google Drive mount is required.
 The notebooks contain code cells for setup, source, compilation and output.
-Task 4 downloads download.png from the lecturer's public image URL.
+Task 4 downloads the project's copy of the lecturer's download.png image.
 The existing Colab links are in the Word report and colab_links.json.
 
 Task 4 demonstrates one public input, download.png, with these output prefixes:

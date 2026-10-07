@@ -8,24 +8,26 @@ password recovery from a file with CUDA, and Sobel edges across multiple PNGs.
 
 Each folder under `Practical Task` contains its own source, input resources,
 Colab notebook and task report. The CUDA programs remain separate `.cu` files.
-The runtime is Python 3 with a T4 GPU; Python only prepares files, checks
-answers and displays results. The assessed computations run in C and CUDA.
+The notebooks use Python 3 for setup, checks and output display. Tasks 01 and
+02 run on the CPU; Tasks 03 and 04 use a T4 GPU. The assessed computations run
+in C and CUDA.
 
-The notebooks contain executable code cells for file upload, source creation,
-compilation, execution and output display. Open the local notebook in Colab
-and upload these files when the first cell runs:
+The notebooks download their required files automatically from the public
+GitHub project, create the source file, compile and run the program, and
+display its output. The first cell downloads these resources:
 
 - Task 01: WordOccurrenceDataset.txt
 - Task 02: MatData.txt
 - Task 03: passwords.txt and expected_passwords.txt
-- Task 04: lodepng.cpp and lodepng.h
+- Task 04: lodepng.cpp, lodepng.h and images/download.png
 
-These files are supplied in each matching task folder. No Google Drive mount
-is needed. Task 04 downloads the lecturer's download.png image with wget and
-checks its SHA-256 checksum before processing. Its public source is recorded
-in images/public_images.json and images/SOURCES.md. The notebook uses
-/content/Task_04 and shows the original image, both gradients and
-the final Sobel output.
+The resources come from a fixed GitHub revision, so each fresh runtime uses
+the same files. No manual file upload, GitHub login or Google Drive mount is
+needed to download them. Task 04 uses the unchanged lecturer image stored in
+the project's GitHub mirror. Its original public source is recorded in
+images/public_images.json and images/SOURCES.md. The notebook uses
+/content/Task_04 and shows the original image, both gradients and the final
+Sobel output.
 
 The senior portfolio informed folder organisation only. Its earlier tasks
 differ from this year's assessment. The programs here follow the current brief.
@@ -41,7 +43,7 @@ The report is named
 - [Task 04](https://colab.research.google.com/drive/1N2NxvodTA4TeiNAUY0JtYP0_kALg1uOE)
 
 These links open the saved notebooks using their Google Drive sharing settings.
-The local notebook files can also be opened using Colab's Upload notebook option.
+The notebook files in the public GitHub project can also be opened in Colab.
 
 Executed notebooks saved in Colab:
 
@@ -63,12 +65,13 @@ Individual task ZIPs and recordings are also available on the same page.
 
 ## Running a task
 
-Open its notebook, choose Runtime > Change runtime type > Python 3 > T4 GPU,
-keep the latest runtime version, and select Run all. Upload the files listed
-above when prompted. The notebook writes the source, compiles and runs the
-program, then displays its output. Each notebook can start from a fresh
-runtime. The password output is compared with expected_passwords.txt, and
-the Sobel program compares its CUDA result with a serial CPU reference.
+Open a notebook in Colab and select Run all. Tasks 01 and 02 use a CPU runtime.
+For Tasks 03 and 04, choose Runtime > Change runtime type > Python 3 > T4 GPU.
+The first cell downloads the files automatically, then the remaining cells
+write the source, compile and run the program, and display its output. Each
+notebook can start from a fresh runtime. The password output is compared with
+expected_passwords.txt, and the Sobel program compares its CUDA result with a
+serial CPU reference.
 
 The word and matrix programs use the CPU in that runtime. Password recovery
 and Sobel detection use its T4 GPU. A Colab GPU allocation is required to run
@@ -102,8 +105,9 @@ The saved Task 04 validation records cover fourteen inputs and forty-two
 output PNGs, including direction ramps, grayscale rounding and the 6-8-10
 example. Full regression checks remain in tools/verify.py and can be run
 with [the development validation notebook](https://colab.research.google.com/github/sahl-2003/HPC/blob/main/tools/HPC_Validation.ipynb).
-Upload the complete portfolio ZIP from the downloads page when running it;
-that archive includes tools/verify.py and the original project folder layout.
+The validation notebook automatically downloads the project source ZIP from
+the same fixed GitHub revision, then runs tools/verify.py. It needs no manual
+ZIP upload.
 The local `evidence` directory also contains one MP4 browser recording per task. Those
 recordings capture the live Colab viewport while the program is rerun and its
 output is displayed, preserving elapsed time at a reduced frame rate.

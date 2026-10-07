@@ -1,7 +1,7 @@
 # Task 04 image sources
 
-The normal notebook demonstration downloads one image using `wget`. Its public
-URL does not require this project's GitHub login or a Google Drive mount. The
+The normal notebook demonstration downloads one image from this public GitHub
+project at a fixed commit. No GitHub sign-in or Google Drive mount is needed. The
 CUDA program processes that one input and saves its X gradient, Y gradient and
 combined Sobel edge image. The notebook displays those outputs beside the
 original image in four views.
@@ -13,8 +13,9 @@ The input is stored without resizing or conversion. `public_images.json`
 contains only `download.png` and records its URL, dimensions and SHA-256
 checksum. It is the only PNG input used in the notebook demonstration.
 
-Upload `lodepng.cpp` and `lodepng.h` in the first cell. Setup downloads the
-public image and verifies its checksum. The notebook uses `/content/Task_04`.
+The first cell downloads `lodepng.cpp`, `lodepng.h` and `images/download.png`
+automatically. The image is an unchanged copy of the public lecturer input.
+The notebook uses `/content/Task_04` and needs no manual uploads.
 `image_downloads.json` retains the source details from the recorded execution.
 
 The separate development validation creates thirteen small PNG fixtures

@@ -8,9 +8,10 @@ WORKSPACE = ROOT.parent
 TASKS = ROOT / 'Practical Task'
 SOURCES = {1: 'WordOccurrence.c', 2: 'MatrixOperations.c',
            3: 'PWCrack.cu', 4: 'SobelEdge.cu'}
-UPLOADS = {1: ['WordOccurrenceDataset.txt'], 2: ['MatData.txt'],
-           3: ['passwords.txt', 'expected_passwords.txt'],
-           4: ['lodepng.cpp', 'lodepng.h']}
+RESOURCE_COMMIT = '2ae868943d23e75e6a6cf5c2a7420c23cf15872b'
+RESOURCES = {1: ['WordOccurrenceDataset.txt'], 2: ['MatData.txt'],
+             3: ['passwords.txt', 'expected_passwords.txt'],
+             4: ['lodepng.cpp', 'lodepng.h', 'images/download.png']}
 
 
 def strip_c_comments(source):
@@ -35,11 +36,15 @@ def cell(source, identifier):
             'execution_count': None, 'outputs': []}
 
 
-def notebook(cells):
-    return {'nbformat': 4, 'nbformat_minor': 5, 'metadata': {
-        'accelerator': 'GPU', 'colab': {'provenance': [], 'gpuType': 'T4'},
+def notebook(cells, gpu=True):
+    metadata = {
+        'colab': {'provenance': []},
         'kernelspec': {'name': 'python3', 'display_name': 'Python 3'},
-        'language_info': {'name': 'python'}}, 'cells': cells}
+        'language_info': {'name': 'python'}}
+    if gpu:
+        metadata['accelerator'] = 'GPU'
+        metadata['colab']['gpuType'] = 'T4'
+    return {'nbformat': 4, 'nbformat_minor': 5, 'metadata': metadata, 'cells': cells}
 
 
 def preserve_outputs(cells, previous):
@@ -61,24 +66,18 @@ def build_task(number):
     path = folder / f'Task_{number:02d}.ipynb'
     previous = json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
     setup = f'''from pathlib import Path
-from google.colab import files
+from urllib.request import urlopen
 import os
-
 folder = Path('/content/Task_{number:02d}')
 folder.mkdir(parents=True, exist_ok=True)
 os.chdir(folder)
-uploaded = files.upload()
-required = {UPLOADS[number]!r}
-assert all(Path(name).is_file() for name in required), 'Upload: ' + ', '.join(required)
-'''
-    if number == 4:
-        setup += '''
-import subprocess
-import hashlib
-Path('images').mkdir(exist_ok=True)
-subprocess.run(['wget', '--timeout=20', '--tries=2', '-q', '-O', 'images/download.png',
-                'https://i.ibb.co/5gB80K0Z/download.png'], check=True)
-assert hashlib.sha256(Path('images/download.png').read_bytes()).hexdigest() == 'bea2b0c28430f63466123f3db2d5f4b5d1a932aade1727d130bf318a490b6309'
+base = 'https://raw.githubusercontent.com/sahl-2003/HPC/{RESOURCE_COMMIT}/Practical%20Task/Task%20{number:02d}/'
+resources = {RESOURCES[number]!r}
+for name in resources:
+    destination = Path(name)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with urlopen(base + name, timeout=30) as response:
+        destination.write_bytes(response.read())
 '''
     compile_code = {
         1: 'gcc -std=c11 -O2 -Wall -Wextra -Wpedantic -pthread WordOccurrence.c -o WordOccurrence',
@@ -104,27 +103,26 @@ assert hashlib.sha256(Path('images/download.png').read_bytes()).hexdigest() == '
         cell('%%bash\nset -e\n' + run_code, f'task{number}_run'),
         cell(displays, f'task{number}_display')]
     preserve_outputs(cells, previous)
-    path.write_text(json.dumps(notebook(cells), indent=1), encoding='utf-8')
+    path.write_text(json.dumps(notebook(cells, gpu=number >= 3), indent=1), encoding='utf-8')
     return path
 
 
 def build_validation():
-    setup = '''from pathlib import Path
-from google.colab import files
+    setup = f'''from pathlib import Path
+from urllib.request import urlopen
 import io, zipfile, subprocess, sys, shutil
-
-uploaded = files.upload()
-project_zip = next(name for name in uploaded if name.endswith('.zip'))
+with urlopen('https://codeload.github.com/sahl-2003/HPC/zip/{RESOURCE_COMMIT}', timeout=30) as response:
+    project_zip = response.read()
 destination = Path('/content/HPC_validation')
 destination.mkdir(parents=True, exist_ok=True)
-with zipfile.ZipFile(io.BytesIO(uploaded[project_zip])) as archive:
+with zipfile.ZipFile(io.BytesIO(project_zip)) as archive:
     archive.extractall(destination)
 verifier = next(destination.rglob('tools/verify.py'))
 ROOT = verifier.parent.parent
 '''
     cells = [cell(setup, 'validation_setup'),
              cell("p = subprocess.run([sys.executable, str(verifier)], text=True, capture_output=True)\nprint(p.stdout)\nprint(p.stderr)\nassert p.returncode == 0, 'Validation failed.'", 'validation_run'),
-             cell("shutil.make_archive('/content/HPC_run_results', 'zip', ROOT)\nfiles.download('/content/HPC_run_results.zip')", 'validation_download')]
+             cell("from google.colab import files\nshutil.make_archive('/content/HPC_run_results', 'zip', ROOT)\nfiles.download('/content/HPC_run_results.zip')", 'validation_download')]
     path = ROOT / 'tools' / 'HPC_Validation.ipynb'
     path.parent.mkdir(parents=True, exist_ok=True)
     contents = json.dumps(notebook(cells), indent=1)

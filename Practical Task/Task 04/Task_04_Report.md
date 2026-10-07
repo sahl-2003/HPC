@@ -13,7 +13,7 @@ Use one public input image, download.png, to demonstrate the brief's four views:
 
 ## Implementation
 
-The notebook uses wget to download download.png (300x300) from the public image URL in the lecturer's last-class code and checks its SHA-256 checksum before use. The input needs no GitHub login or Drive mount. After lodepng.cpp and lodepng.h are uploaded, LodePNG decodes the file into an RGBA host array, with its original licence notices retained.
+The notebook automatically downloads lodepng.cpp, lodepng.h and download.png (300x300) from the public GitHub project. The image is an unchanged copy of the public input in the last-class teaching example. The files are taken from a fixed project revision, so every fresh runtime uses the same inputs. LodePNG decodes the image into an RGBA host array, with its original licence notices retained.
 
 The last-class sample demonstrates PNG decoding, explicit CUDA memory transfers and rgbToGray; its final kernel stops at grayscale conversion. This implementation extends that workflow with the assessed Sobel convolution. Luminance uses the lecturer's 0.30R + 0.59G + 0.11B weights as (30*R + 59*G + 11*B) / 100, rounded down. Integer arithmetic gives identical CPU and GPU truncation. Gx is [-1,0,1; -2,0,2; -1,0,1] and Gy is [-1,-2,-1; 0,0,0; 1,2,1]. Out-of-image neighbours are zero.
 
