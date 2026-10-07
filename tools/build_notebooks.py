@@ -36,14 +36,13 @@ def cell(source, identifier):
             'execution_count': None, 'outputs': []}
 
 
-def notebook(cells, gpu=True):
+def notebook(cells):
     metadata = {
         'colab': {'provenance': []},
         'kernelspec': {'name': 'python3', 'display_name': 'Python 3'},
         'language_info': {'name': 'python'}}
-    if gpu:
-        metadata['accelerator'] = 'GPU'
-        metadata['colab']['gpuType'] = 'T4'
+    metadata['accelerator'] = 'GPU'
+    metadata['colab']['gpuType'] = 'T4'
     return {'nbformat': 4, 'nbformat_minor': 5, 'metadata': metadata, 'cells': cells}
 
 
@@ -103,7 +102,7 @@ for name in resources:
         cell('%%bash\nset -e\n' + run_code, f'task{number}_run'),
         cell(displays, f'task{number}_display')]
     preserve_outputs(cells, previous)
-    path.write_text(json.dumps(notebook(cells, gpu=number >= 3), indent=1), encoding='utf-8')
+    path.write_text(json.dumps(notebook(cells), indent=1), encoding='utf-8')
     return path
 
 

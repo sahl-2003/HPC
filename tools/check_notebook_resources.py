@@ -75,14 +75,10 @@ for number in range(1, 5):
     if number == 4:
         assert 'Gradient in X direction' in sources[4]
         assert 'Gradient in Y direction' in sources[4]
-    if number >= 3:
-        assert content['metadata']['accelerator'] == 'GPU'
-        assert content['metadata']['colab']['gpuType'] == 'T4'
-    else:
-        assert 'accelerator' not in content['metadata']
-        assert 'gpuType' not in content['metadata']['colab']
+    assert content['metadata']['accelerator'] == 'GPU'
+    assert content['metadata']['colab']['gpuType'] == 'T4'
     checked.append(path.name)
-    print(f'PASS: {path.name}, five code cells, automatic public resources, unchanged algorithm tokens')
+    print(f'PASS: {path.name}, T4 GPU, five code cells, automatic public resources, unchanged algorithm tokens')
 
 validation = ROOT / 'tools' / 'HPC_Validation.ipynb'
 content = json.loads(validation.read_text(encoding='utf-8'))
@@ -116,7 +112,7 @@ result = {'status': 'PASS', 'notebooks': checked, 'resource_commit': RESOURCE_CO
                      'Notebook cells contain executable task code only',
                      'Python setup and display cells parse successfully',
                      'Published repository validation helper downloads the pinned source ZIP',
-                     'CPU metadata for Tasks 1/2 and T4 GPU metadata for Tasks 3/4']}
+                     'T4 GPU metadata for all four tasks']}
 output = ROOT / 'evidence' / 'resource_validation.json'
 output.parent.mkdir(parents=True, exist_ok=True)
 output.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')

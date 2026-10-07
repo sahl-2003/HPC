@@ -136,8 +136,9 @@ follow the requested submission layout. Source filenames keep the tested names
 used in the report and saved Colab notebooks. lodepng.cpp is kept as the C++
 codec source compiled by nvcc, with its original licence and header.
 
-Open a notebook in Google Colab and select Run all. Tasks 1 and 2 use a CPU
-runtime. Tasks 3 and 4 need a T4 GPU runtime. The first cell downloads the
+For all four notebooks, choose a Python 3 runtime with a T4 GPU in Google
+Colab, then select Run all. Tasks 1 and 2 compute on the CPU within that
+runtime; Tasks 3 and 4 use its GPU. The first cell downloads the
 required input files and codec sources from the public GitHub project.
 No manual file upload, GitHub sign-in or Google Drive mount is required.
 The notebooks contain code cells for setup, source, compilation and output.

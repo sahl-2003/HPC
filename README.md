@@ -8,9 +8,10 @@ password recovery from a file with CUDA, and Sobel edges across multiple PNGs.
 
 Each folder under `Practical Task` contains its own source, input resources,
 Colab notebook and task report. The CUDA programs remain separate `.cu` files.
-The notebooks use Python 3 for setup, checks and output display. Tasks 01 and
-02 run on the CPU; Tasks 03 and 04 use a T4 GPU. The assessed computations run
-in C and CUDA.
+All four notebooks use a Python 3 Colab runtime with a T4 GPU. Python handles
+setup, checks and output display. Tasks 01 and 02 compute on the CPU within
+that runtime; Tasks 03 and 04 use its GPU. The assessed computations run in
+C and CUDA.
 
 The notebooks download their required files automatically from the public
 GitHub project, create the source file, compile and run the program, and
@@ -65,8 +66,8 @@ Individual task ZIPs and recordings are also available on the same page.
 
 ## Running a task
 
-Open a notebook in Colab and select Run all. Tasks 01 and 02 use a CPU runtime.
-For Tasks 03 and 04, choose Runtime > Change runtime type > Python 3 > T4 GPU.
+For every notebook, choose Runtime > Change runtime type > Python 3 > T4 GPU,
+then select Run all.
 The first cell downloads the files automatically, then the remaining cells
 write the source, compile and run the program, and display its output. Each
 notebook can start from a fresh runtime. The password output is compared with
