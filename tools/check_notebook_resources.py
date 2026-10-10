@@ -3,6 +3,7 @@ import io
 import json
 from pathlib import Path
 import re
+import shlex
 import tokenize
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,16 +29,18 @@ def assignment(tree, name):
 
 
 def check_python(source):
-    tree = ast.parse(source)
+    python_source = '\n'.join('pass' if line.startswith(('!', '%')) else line
+                              for line in source.splitlines())
+    tree = ast.parse(python_source)
     assert not any(token.type == tokenize.COMMENT
-                   for token in tokenize.generate_tokens(io.StringIO(source).readline))
+                   for token in tokenize.generate_tokens(io.StringIO(python_source).readline))
     assert all(marker not in source for marker in
-               ('files.upload', 'drive.mount', 'RESOURCE_COPY', 'RESOURCE_SHA256', 'base64'))
-    downloads = [node for node in ast.walk(tree) if isinstance(node, ast.Call) and
-                 isinstance(node.func, ast.Name) and node.func.id == 'urlopen']
-    for call in downloads:
-        assert any(keyword.arg == 'timeout' and ast.literal_eval(keyword.value) == 30
-                   for keyword in call.keywords)
+               ('files.upload', 'drive.mount', 'RESOURCE_COPY', 'RESOURCE_SHA256', 'base64', 'urlopen'))
+    downloads = [shlex.split(line[1:]) for line in source.splitlines()
+                 if line.startswith('!wget ')]
+    for command in downloads:
+        assert command[:4] == ['wget', '--timeout=30', '--tries=3', '-O']
+        assert len(command) == 6
     return tree, downloads
 
 
@@ -55,17 +58,15 @@ for number in range(1, 5):
                'files.upload' not in source for source in sources)
     setup = sources[0]
     tree, downloads = check_python(setup)
-    assert len(setup.splitlines()) <= 15 and len(downloads) == 1
+    assert len(setup.splitlines()) <= 8 and len(downloads) == len(RESOURCES[number])
     base = f'https://raw.githubusercontent.com/sahl-2003/HPC/{RESOURCE_COMMIT}/Practical%20Task/Task%20{number:02d}/'
-    assert assignment(tree, 'base') == base
-    assert assignment(tree, 'resources') == RESOURCES[number]
+    assert downloads == [['wget', '--timeout=30', '--tries=3', '-O', name, base + name]
+                         for name in RESOURCES[number]]
     assert all((folder / name).is_file() for name in RESOURCES[number])
-    assert f"folder = Path('/content/Task_{number:02d}')" in setup
-    assert 'folder.mkdir(parents=True, exist_ok=True)' in setup
-    assert 'destination.parent.mkdir(parents=True, exist_ok=True)' in setup
-    assert 'os.chdir(folder)' in setup
-    assert 'urlopen(base + name, timeout=30)' in setup
-    assert 'destination.write_bytes(response.read())' in setup
+    download_folder = f'/content/Task_{number:02d}' + ('/images' if number == 4 else '')
+    assert f'!mkdir -p {download_folder}' in setup
+    assert f'%cd /content/Task_{number:02d}' in setup
+    assert setup.startswith('from pathlib import Path\n')
     assert sources[1].split('\n', 1)[0] == '%%writefile ' + SOURCES[number]
     assert c_tokens(sources[1].split('\n', 1)[1]) == c_tokens(
         (folder / SOURCES[number]).read_text(encoding='utf-8'))
@@ -78,7 +79,7 @@ for number in range(1, 5):
     assert content['metadata']['accelerator'] == 'GPU'
     assert content['metadata']['colab']['gpuType'] == 'T4'
     checked.append(path.name)
-    print(f'PASS: {path.name}, T4 GPU, five code cells, automatic public resources, unchanged algorithm tokens')
+    print(f'PASS: {path.name}, T4 GPU, five code cells, !wget public resources, unchanged algorithm tokens')
 
 validation = ROOT / 'tools' / 'HPC_Validation.ipynb'
 content = json.loads(validation.read_text(encoding='utf-8'))
@@ -92,7 +93,8 @@ for cell in content['cells']:
 setup = ''.join(content['cells'][0]['source'])
 tree, downloads = check_python(setup)
 assert len(downloads) == 1
-assert ast.literal_eval(downloads[0].args[0]) == f'https://codeload.github.com/sahl-2003/HPC/zip/{RESOURCE_COMMIT}'
+assert downloads[0] == ['wget', '--timeout=30', '--tries=3', '-O', '/content/HPC_validation.zip',
+                        f'https://codeload.github.com/sahl-2003/HPC/zip/{RESOURCE_COMMIT}']
 assert 'destination.mkdir(parents=True, exist_ok=True)' in setup
 assert 'archive.extractall(destination)' in setup
 assert "verifier = next(destination.rglob('tools/verify.py'))" in setup
@@ -106,11 +108,11 @@ print('PASS: repository validation helper automatically downloads the pinned pro
 result = {'status': 'PASS', 'notebooks': checked, 'resource_commit': RESOURCE_COMMIT,
           'checked_resources': sum(len(names) for names in RESOURCES.values()),
           'checks': ['Five executable code cells in each task notebook',
-                     'Public pinned GitHub resource URLs with a 30-second timeout',
+                     '!wget downloads from public pinned GitHub URLs with a 30-second timeout',
                      'Automatic downloads create required runtime folders and files',
                      'C/CUDA tokens match the separate sources after comment removal',
                      'Notebook cells contain executable task code only',
-                     'Python setup and display cells parse successfully',
+                     'Python setup and display cells parse successfully after notebook magic preprocessing',
                      'Published repository validation helper downloads the pinned source ZIP',
                      'T4 GPU metadata for all four tasks']}
 output = ROOT / 'evidence' / 'resource_validation.json'

@@ -64,20 +64,16 @@ def build_task(number):
     folder = TASKS / f'Task {number:02d}'
     path = folder / f'Task_{number:02d}.ipynb'
     previous = json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
-    setup = f'''from pathlib import Path
-from urllib.request import urlopen
-import os
-folder = Path('/content/Task_{number:02d}')
-folder.mkdir(parents=True, exist_ok=True)
-os.chdir(folder)
-base = 'https://raw.githubusercontent.com/sahl-2003/HPC/{RESOURCE_COMMIT}/Practical%20Task/Task%20{number:02d}/'
-resources = {RESOURCES[number]!r}
-for name in resources:
-    destination = Path(name)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    with urlopen(base + name, timeout=30) as response:
-        destination.write_bytes(response.read())
-'''
+    runtime_folder = f'/content/Task_{number:02d}'
+    base = f'https://raw.githubusercontent.com/sahl-2003/HPC/{RESOURCE_COMMIT}/Practical%20Task/Task%20{number:02d}/'
+    download_folder = runtime_folder + ('/images' if number == 4 else '')
+    setup = '\n'.join([
+        'from pathlib import Path',
+        f'!mkdir -p {download_folder}',
+        f'%cd {runtime_folder}',
+        *[f'!wget --timeout=30 --tries=3 -O {name} {base}{name}'
+          for name in RESOURCES[number]],
+        ''])
     compile_code = {
         1: 'gcc -std=c11 -O2 -Wall -Wextra -Wpedantic -pthread WordOccurrence.c -o WordOccurrence',
         2: 'gcc -std=c11 -O2 -Wall -Wextra -Wpedantic -fopenmp MatrixOperations.c -lm -o MatrixOperations',
@@ -108,13 +104,11 @@ for name in resources:
 
 def build_validation():
     setup = f'''from pathlib import Path
-from urllib.request import urlopen
-import io, zipfile, subprocess, sys, shutil
-with urlopen('https://codeload.github.com/sahl-2003/HPC/zip/{RESOURCE_COMMIT}', timeout=30) as response:
-    project_zip = response.read()
+import zipfile, subprocess, sys, shutil
+!wget --timeout=30 --tries=3 -O /content/HPC_validation.zip https://codeload.github.com/sahl-2003/HPC/zip/{RESOURCE_COMMIT}
 destination = Path('/content/HPC_validation')
 destination.mkdir(parents=True, exist_ok=True)
-with zipfile.ZipFile(io.BytesIO(project_zip)) as archive:
+with zipfile.ZipFile('/content/HPC_validation.zip') as archive:
     archive.extractall(destination)
 verifier = next(destination.rglob('tools/verify.py'))
 ROOT = verifier.parent.parent

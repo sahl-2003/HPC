@@ -14,7 +14,7 @@ that runtime; Tasks 03 and 04 use its GPU. The assessed computations run in
 C and CUDA.
 
 The notebooks download their required files automatically from the public
-GitHub project, create the source file, compile and run the program, and
+GitHub project using `!wget`, create the source file, compile and run the program, and
 display its output. The first cell downloads these resources:
 
 - Task 01: WordOccurrenceDataset.txt
@@ -68,7 +68,7 @@ Individual task ZIPs and recordings are also available on the same page.
 
 For every notebook, choose Runtime > Change runtime type > Python 3 > T4 GPU,
 then select Run all.
-The first cell downloads the files automatically, then the remaining cells
+The first cell uses `!wget` to download the files automatically, then the remaining cells
 write the source, compile and run the program, and display its output. Each
 notebook can start from a fresh runtime. The password output is compared with
 expected_passwords.txt, and the Sobel program compares its CUDA result with a
@@ -106,7 +106,7 @@ The saved Task 04 validation records cover fourteen inputs and forty-two
 output PNGs, including direction ramps, grayscale rounding and the 6-8-10
 example. Full regression checks remain in tools/verify.py and can be run
 with [the development validation notebook](https://colab.research.google.com/github/sahl-2003/HPC/blob/main/tools/HPC_Validation.ipynb).
-The validation notebook automatically downloads the project source ZIP from
+The validation notebook uses `!wget` to download the project source ZIP from
 the same fixed GitHub revision, then runs tools/verify.py. It needs no manual
 ZIP upload.
 The local `evidence` directory also contains one MP4 browser recording per task. Those
